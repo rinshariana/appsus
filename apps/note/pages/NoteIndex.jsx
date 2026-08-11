@@ -1,4 +1,5 @@
 import { noteService } from '../services/note.service.js'
+import { NoteList } from '../cmps/NoteList.jsx'
 
 const { useState, useEffect } = React
 
@@ -19,7 +20,7 @@ export function NoteIndex() {
     return (
         <section className="note-index">
             <h2>Keep</h2>
-            <pre>{JSON.stringify(notes, null, 2)}</pre>
+            <NoteList notes={notes} />
         </section>
     )
 }
