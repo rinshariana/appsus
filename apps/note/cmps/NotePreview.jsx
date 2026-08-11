@@ -6,8 +6,19 @@ export function NotePreview({ note }) {
             className="note-preview"
             style={note.style}
         >
-            {note.type === 'NoteTxt' && <NoteTxt info={note.info}/>}
+            <DynamicCmp 
+            cmpType={note.type}
+            info={note.info}
+            />
         </article>
     )
+}
+
+function DynamicCmp(props) {
+    const cmpMap = {
+        NoteTxt: <NoteTxt {...props} />,
+    }
+
+    return cmpMap[props.cmpType]
 }
 
