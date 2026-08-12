@@ -6,6 +6,8 @@ _createNotes()
 
 export const noteService = {
     query,
+    save,
+    getEmptyNote,
 }
 
 
@@ -13,10 +15,37 @@ function query() {
     return storageService.query(NOTE_KEY)
 }
 
+function save(note) {
+    if (note.id) {
+        return storageService.put(NOTE_KEY, note)
+    } else {
+        return storageService.post(NOTE_KEY, note)
+    }
+}
+
+function getEmptyNote(
+    type = 'NoteTxt',
+    title = '',
+    txt = ''
+) {
+    return {
+        createdAt: Date.now(),
+        type,
+        isPinned: false,
+        style: {
+            backgroundColor: ''
+        },
+        info: {
+            title,
+            txt
+        }
+    }
+}
+
 function _createNotes() {
     let notes = utilService.loadFromStorage(NOTE_KEY)
 
-     if (!notes || !notes.length) {
+    if (!notes || !notes.length) {
         notes = [
             {
                 id: 'n101',
