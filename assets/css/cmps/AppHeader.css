@@ -2,15 +2,15 @@
     display: flex;
     justify-content: space-between;
     padding: 1em;
-    background: var(--bg1);
+    background: lightblue;
 }
 
-nav a {
+.app-header nav a {
     margin: .5em;
 }
 
-nav a.active {
-    color: var(--color1);
+.app-header nav a.active {
+    color: var(--clr-brand-primary);
     font-weight: bold;
     text-decoration: overline;
 }
