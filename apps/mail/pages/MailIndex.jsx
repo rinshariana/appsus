@@ -4,6 +4,7 @@ const { Outlet, useMatch, useNavigate } = ReactRouterDOM
 import { showErrorMsg } from '../../../services/event-bus.service.js'
 import { MailFolderList } from '../cmps/MailFolderList.jsx'
 import { MailList } from '../cmps/MailList.jsx'
+import { MailToolbar } from '../cmps/MailToolbar.jsx'
 import { mailService } from '../services/mail.service.js'
 
 export function MailIndex() {
@@ -74,22 +75,13 @@ export function MailIndex() {
             />
 
             <main className="mail-main">
-                <header className="mail-toolbar">
-                    <button
-                        className="mail-menu-btn"
-                        type="button"
-                        aria-label="Open mail folders"
-                        aria-expanded={isFolderDrawerOpen}
-                        aria-controls="mail-folder-drawer"
-                        onClick={() => setIsFolderDrawerOpen(true)}
-                    >
-                        ☰
-                    </button>
-                    <h1>{folderTitle}</h1>
-                    <span className="mail-count">
-                        {isLoading ? 'Loading…' : `${mails.length} ${mails.length === 1 ? 'message' : 'messages'}`}
-                    </span>
-                </header>
+                <MailToolbar
+                    folderTitle={folderTitle}
+                    messageCount={mails.length}
+                    isLoading={isLoading}
+                    isMenuOpen={isFolderDrawerOpen}
+                    onOpenMenu={() => setIsFolderDrawerOpen(true)}
+                />
 
                 <section className="mail-content">
                     {isDetailsOpen
