@@ -14,6 +14,8 @@
     --mail-clr-folder-active-text: #001d35;
     --mail-clr-on-accent: #fff;
     --mail-clr-backdrop: rgb(0 0 0 / 45%);
+    --mail-clr-row-read: #f2f6fc;
+    --mail-clr-row-action-hover: #e6e9ed;
 
     --mail-sidebar-width: 220px;
     --mail-toolbar-height: 64px;
@@ -22,5 +24,7 @@
     --mail-shell-radius: 16px;
     --mail-folder-radius: 22px;
     --mail-drawer-shadow: 4px 0 16px rgb(0 0 0 / 20%);
+    --mail-row-hover-shadow: 0 1px 2px rgb(60 64 67 / 30%),
+        0 1px 3px 1px rgb(60 64 67 / 15%);
     --mail-transition-duration: 180ms;
 }

@@ -1,7 +1,7 @@
 const { useEffect, useState } = React
 const { Outlet, useMatch, useNavigate } = ReactRouterDOM
 
-import { showErrorMsg } from '../../../services/event-bus.service.js'
+import { showErrorMsg, showSuccessMsg } from '../../../services/event-bus.service.js'
 import { MailFolderList } from '../cmps/MailFolderList.jsx'
 import { MailList } from '../cmps/MailList.jsx'
 import { MailToolbar } from '../cmps/MailToolbar.jsx'
@@ -14,6 +14,7 @@ export function MailIndex() {
     const [unreadCount, setUnreadCount] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
     const [isFolderDrawerOpen, setIsFolderDrawerOpen] = useState(false)
+    const [refreshCount, setRefreshCount] = useState(0)
     const navigate = useNavigate()
     const isDetailsOpen = Boolean(useMatch('/mail/:mailId'))
 
@@ -42,7 +43,7 @@ export function MailIndex() {
         return () => {
             isActive = false
         }
-    }, [filterBy, sortBy])
+    }, [filterBy, sortBy, refreshCount])
 
     useEffect(() => {
         if (!isFolderDrawerOpen) return
@@ -60,6 +61,65 @@ export function MailIndex() {
         setFilterBy(prevFilter => ({ ...prevFilter, status }))
         navigate('/mail')
         setIsFolderDrawerOpen(false)
+    }
+
+    async function onMarkAsRead(mail) {
+        if (mail.isRead) return mail
+
+        try {
+            const savedMail = await mailService.save({ ...mail, isRead: true })
+
+            setMails(currentMails => currentMails.map(currentMail => {
+                return currentMail.id === savedMail.id ? savedMail : currentMail
+            }))
+            await refreshUnreadCount()
+
+            return savedMail
+        } catch (err) {
+            showErrorMsg('Could not mark this message as read.')
+            console.error('Failed to mark mail as read:', err)
+            throw err
+        }
+    }
+
+    async function onDeleteMail(mail) {
+        const isPermanentDelete = Boolean(mail.removedAt)
+
+        try {
+            if (isPermanentDelete) await mailService.remove(mail.id)
+            else await mailService.moveToTrash(mail.id)
+
+            setMails(currentMails => {
+                return currentMails.filter(currentMail => currentMail.id !== mail.id)
+            })
+            await refreshUnreadCount()
+            showSuccessMsg(isPermanentDelete
+                ? 'Message deleted permanently.'
+                : 'Message moved to Trash.'
+            )
+        } catch (err) {
+            showErrorMsg(isPermanentDelete
+                ? 'Could not delete this message permanently.'
+                : 'Could not move this message to Trash.'
+            )
+            console.error('Failed to delete mail:', err)
+            throw err
+        }
+    }
+
+    function onCloseDetails() {
+        navigate('/mail')
+        setRefreshCount(currentCount => currentCount + 1)
+    }
+
+    async function refreshUnreadCount() {
+        try {
+            const loadedUnreadCount = await mailService.getUnreadCount()
+            setUnreadCount(loadedUnreadCount)
+        } catch (err) {
+            showErrorMsg('Could not refresh the unread count.')
+            console.error('Failed to refresh unread count:', err)
+        }
     }
 
     const folderTitle = filterBy.status.charAt(0).toUpperCase() + filterBy.status.slice(1)
@@ -85,8 +145,17 @@ export function MailIndex() {
 
                 <section className="mail-content">
                     {isDetailsOpen
-                        ? <Outlet />
-                        : <MailList mails={mails} isLoading={isLoading} />
+                        ? <Outlet context={{
+                            mails,
+                            onMarkAsRead,
+                            onDeleteMail,
+                            onCloseDetails,
+                        }} />
+                        : <MailList
+                            mails={mails}
+                            isLoading={isLoading}
+                            onDeleteMail={onDeleteMail}
+                        />
                     }
                 </section>
             </main>

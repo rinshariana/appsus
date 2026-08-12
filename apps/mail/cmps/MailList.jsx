@@ -1,8 +1,6 @@
-const { Link } = ReactRouterDOM
+import { MailPreview } from './MailPreview.jsx'
 
-import { mailService } from '../services/mail.service.js'
-
-export function MailList({ mails, isLoading }) {
+export function MailList({ mails, isLoading, onDeleteMail }) {
     if (isLoading) {
         return <p className="mail-list-status" role="status">Loading mail…</p>
     }
@@ -11,35 +9,15 @@ export function MailList({ mails, isLoading }) {
         return <p className="mail-list-status">This folder is empty.</p>
     }
 
-    const loggedinUser = mailService.getLoggedinUser()
-
     return (
         <ul className="mail-list">
             {mails.map(mail => (
-                <li className="mail-row" key={mail.id}>
-                    <Link to={`/mail/${mail.id}`}>
-                        <span className="mail-correspondent">
-                            {mail.from === loggedinUser.email
-                                ? `To: ${mail.to}`
-                                : mail.from
-                            }
-                        </span>
-                        <span className="mail-subject">{mail.subject || '(No subject)'}</span>
-                        <time dateTime={new Date(mail.sentAt || mail.createdAt).toISOString()}>
-                            {formatMailDate(mail.sentAt || mail.createdAt)}
-                        </time>
-                    </Link>
-                </li>
+                <MailPreview
+                    mail={mail}
+                    onDelete={onDeleteMail}
+                    key={mail.id}
+                />
             ))}
         </ul>
     )
-}
-
-function formatMailDate(timestamp) {
-    if (!timestamp) return ''
-
-    return new Intl.DateTimeFormat(undefined, {
-        month: 'short',
-        day: 'numeric',
-    }).format(timestamp)
 }

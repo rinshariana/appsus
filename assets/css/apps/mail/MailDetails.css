@@ -8,8 +8,13 @@
     display: inline-flex;
     align-items: center;
     min-height: var(--mail-touch-target);
+    padding: 0;
     margin-bottom: 1rem;
+    border: 0;
     color: var(--mail-clr-accent);
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
 }
 
 .mail-details-back:focus-visible {

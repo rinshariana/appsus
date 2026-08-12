@@ -87,14 +87,30 @@
         border-radius: var(--mail-folder-radius);
     }
 
-    .mail-row a {
-        grid-template-columns: minmax(40px, 32vw) minmax(0, 1fr) auto;
-        gap: .625rem;
-        padding: .625rem .75rem;
+    .mail-row-link {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "correspondent time"
+            "summary summary";
+        gap: .2rem .625rem;
+        padding: .5rem .75rem;
+    }
+
+    .mail-correspondent {
+        grid-area: correspondent;
+    }
+
+    .mail-summary {
+        grid-area: summary;
+    }
+
+    .mail-row-time {
+        grid-area: time;
     }
 
     .mail-correspondent,
-    .mail-subject {
+    .mail-subject,
+    .mail-snippet {
         font-size: .875rem;
     }
 
@@ -105,7 +121,9 @@
 
 @media (prefers-reduced-motion: reduce) {
     .mail-folder-list,
-    .mail-drawer-backdrop {
+    .mail-drawer-backdrop,
+    .mail-row-time,
+    .mail-row-delete {
         transition: none;
     }
 }
