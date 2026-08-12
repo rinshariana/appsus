@@ -1,0 +1,14 @@
+.note-preview {
+    border: 1px solid var(--keep-gray-primary);
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 120px;
+}
+
+.note-preview h3 {
+    margin-bottom: 0.75rem;
+}
+
+.note-preview p {
+    margin: 0;
+}
