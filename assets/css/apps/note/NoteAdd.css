@@ -1,0 +1,11 @@
+.note-add {
+    max-width: 600px;
+    margin: 2rem auto;
+    border: 1px solid var(--keep-gray-primary);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+}
+
+.note-add button {
+    margin-top: 0.5rem;
+}
