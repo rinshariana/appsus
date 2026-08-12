@@ -1,0 +1,29 @@
+.mail-index {
+    display: grid;
+    grid-template-columns: var(--mail-sidebar-width) minmax(0, 1fr);
+    width: 100%;
+    max-width: 100%;
+    height: calc(100vh - 3.5rem);
+    height: calc(100dvh - 3.5rem);
+    min-height: 0;
+    overflow: hidden;
+    color: var(--mail-clr-text-primary);
+    background: var(--mail-clr-page);
+    font-family: var(--mail-font-family);
+}
+
+.mail-main {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--mail-clr-surface);
+    border-start-start-radius: var(--mail-shell-radius);
+}
+
+.mail-content {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}

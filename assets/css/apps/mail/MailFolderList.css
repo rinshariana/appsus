@@ -1,0 +1,94 @@
+.mail-folder-list {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    padding: 1rem .75rem;
+    overflow-y: auto;
+    background: var(--mail-clr-page);
+}
+
+.mail-folder-list nav {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.mail-compose-btn,
+.mail-folder-btn,
+.mail-drawer-close {
+    min-height: var(--mail-touch-target);
+    border: 0;
+    font: inherit;
+}
+
+.mail-compose-btn {
+    width: 100%;
+    min-height: 56px;
+    margin-bottom: 1rem;
+    border-radius: var(--mail-shell-radius);
+    color: var(--mail-clr-compose-text);
+    background: var(--mail-clr-compose);
+    font-weight: 600;
+    text-align: center;
+}
+
+.mail-compose-btn:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+}
+
+.mail-compose-help {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.mail-folder-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: .625rem 1rem;
+    border-radius: 0 var(--mail-folder-radius) var(--mail-folder-radius) 0;
+    color: var(--mail-clr-text-secondary);
+    background: transparent;
+    text-align: start;
+    cursor: pointer;
+}
+
+.mail-folder-btn.active {
+    color: var(--mail-clr-folder-active-text);
+    background: var(--mail-clr-folder-active);
+    font-weight: 700;
+}
+
+.mail-folder-btn:focus-visible,
+.mail-drawer-close:focus-visible {
+    outline: 2px solid var(--mail-clr-accent);
+    outline-offset: 2px;
+}
+
+.mail-unread-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 .4rem;
+    border-radius: 999px;
+    color: var(--mail-clr-on-accent);
+    background: var(--mail-clr-accent);
+    font-size: .75rem;
+    line-height: 1;
+}
+
+.mail-drawer-close,
+.mail-drawer-backdrop {
+    display: none;
+}

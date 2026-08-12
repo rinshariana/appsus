@@ -1,0 +1,22 @@
+.mail-details {
+    height: 100%;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.mail-details-back {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--mail-touch-target);
+    margin-bottom: 1rem;
+    color: var(--mail-clr-accent);
+}
+
+.mail-details-back:focus-visible {
+    outline: 2px solid var(--mail-clr-accent);
+    outline-offset: 2px;
+}
+
+.mail-details h2 {
+    font-size: 1.25rem;
+}
