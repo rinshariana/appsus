@@ -27,6 +27,7 @@ function _createNotes() {
                     backgroundColor: '#00d'
                 },
                 info: {
+                    title: 'My first title',
                     txt: 'Fullstack Me Baby!'
                 }
             },
@@ -58,7 +59,20 @@ function _createNotes() {
                         { txt: 'Coding power', isDone: false }
                     ]
                 }
-            }
+            },
+            {
+                id: 'n104',
+                createdAt: 111225,
+                type: 'NoteTxt',
+                isPinned: false,
+                style: {
+                    backgroundColor: 'rgb(15, 211, 192)'
+                },
+                info: {
+                    title: 'My second title',
+                    txt: 'Just a random note'
+                }
+            },
         ]
 
         utilService.saveToStorage(NOTE_KEY, notes)
