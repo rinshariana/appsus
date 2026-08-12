@@ -1,0 +1,35 @@
+.note-editor {
+    display: flex;
+    flex-direction: column;
+
+    .note--edit {
+        display: flex;
+        flex-direction: column;
+
+        border: 1px solid var(--keep-gray-primary);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+
+        .note-title,
+        .note-content {
+            border: 0;
+            outline: 0;
+            background: transparent;
+            font: inherit;
+        }
+
+        .note-title {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .note-content {
+            resize: none;
+            min-height: 60px;
+        }
+    }
+
+    button {
+        margin-top: 0.5rem;
+    }
+}

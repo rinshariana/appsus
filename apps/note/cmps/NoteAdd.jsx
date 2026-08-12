@@ -1,24 +1,13 @@
-const { useState } = React
-
 import { noteService } from '../services/note.service.js'
-import { NoteForm } from './NoteForm.jsx'
+import { NoteEditor } from './NoteEditor.jsx'
 
 export function NoteAdd({ onAddNote }) {
-    const [note, setNote] = useState(noteService.getEmptyNote())
-
-    function onSaveNote(ev) {
-        ev.preventDefault()
-        onAddNote(note)
-    }
-
     return (
-        <form className="note-add" onSubmit={onSaveNote}>
-            <NoteForm
-                note={note}
-                setNote={setNote}
+        <section className="note-add">
+            <NoteEditor
+                initialNote={noteService.getEmptyNote()}
+                onSave={onAddNote}
             />
-
-            <button>Save</button>
-        </form>
+        </section>
     )
 }
