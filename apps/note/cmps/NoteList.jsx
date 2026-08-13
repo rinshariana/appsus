@@ -1,18 +1,26 @@
 import { NotePreview } from "./NotePreview.jsx"
 
-export function NoteList({ notes }) {
+export function NoteList({ notes, onRemoveNote }) {
     const pinnedNotes = notes.filter(note => note.isPinned)
     const otherNotes = notes.filter(note => !note.isPinned)
 
     return (
         <section className="notes-container">
-            <NoteGroup title="Pinned" notes={pinnedNotes} />
-            <NoteGroup title="Others" notes={otherNotes} />
+            <NoteGroup
+                title="Pinned" 
+                notes={pinnedNotes} 
+                onRemoveNote={onRemoveNote}
+            />
+            <NoteGroup
+                title="Others" 
+                notes={otherNotes} 
+                onRemoveNote={onRemoveNote}
+            />
         </section>
     )
 }
 
-function NoteGroup({ title, notes }) {
+function NoteGroup({ title, notes, onRemoveNote }) {
     if (!notes.length) return null
 
     return (
@@ -22,7 +30,10 @@ function NoteGroup({ title, notes }) {
             <ul className="note-list">
                 {notes.map(note => (
                     <li key={note.id}>
-                        <NotePreview note={note} />
+                        <NotePreview 
+                            note={note}
+                            onRemoveNote={onRemoveNote}
+                        />
                     </li>
                 ))}
             </ul>

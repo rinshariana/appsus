@@ -17,19 +17,32 @@ export function NoteIndex() {
     }
 
     function onAddNote(note) {
-    noteService.save(note)
-        .then(savedNote => {
-            setNotes(prevNotes => [savedNote, ...prevNotes])
-        })
-}
+        return noteService.save(note)
+            .then(savedNote => {
+                setNotes(prevNotes => [savedNote, ...prevNotes])
+            })
+    }
+
+    function onRemoveNote(noteId) {
+        noteService.remove(noteId)
+            .then(() => {
+                setNotes(prevNotes =>
+                    prevNotes.filter(note => note.id !== noteId)
+                )
+            })
+    }
+
 
     if (!notes) return <div>Loading...</div>
 
     return (
         <section className="note-index">
             <h2>Keep</h2>
-              <NoteAdd onAddNote={onAddNote} />
-            <NoteList notes={notes} />
+            <NoteAdd onAddNote={onAddNote} />
+            <NoteList 
+                notes={notes}
+                onRemoveNote={onRemoveNote}
+            />
         </section>
     )
 }

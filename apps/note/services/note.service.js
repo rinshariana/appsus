@@ -7,6 +7,7 @@ _createNotes()
 export const noteService = {
     query,
     save,
+    remove,
     getEmptyNote,
 }
 
@@ -21,6 +22,10 @@ function save(note) {
     } else {
         return storageService.post(NOTE_KEY, note)
     }
+}
+
+function remove(noteId) {
+    return storageService.remove(NOTE_KEY, noteId)
 }
 
 function getEmptyNote(

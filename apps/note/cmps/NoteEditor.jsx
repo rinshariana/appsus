@@ -19,7 +19,11 @@ export function NoteEditor({ initialNote, onSave }) {
 
     function onSubmit(ev) {
         ev.preventDefault()
+
         onSave(note)
+            .then(() => {
+                setNote(initialNote)
+            })
     }
 
     return (
