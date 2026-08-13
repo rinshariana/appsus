@@ -134,14 +134,16 @@ export function MailIndex() {
                 onClose={() => setIsFolderDrawerOpen(false)}
             />
 
-            <main className="mail-main">
-                <MailToolbar
-                    folderTitle={folderTitle}
-                    messageCount={mails.length}
-                    isLoading={isLoading}
-                    isMenuOpen={isFolderDrawerOpen}
-                    onOpenMenu={() => setIsFolderDrawerOpen(true)}
-                />
+            <main className={`mail-main ${isDetailsOpen ? 'details-open' : ''}`}>
+                {!isDetailsOpen && (
+                    <MailToolbar
+                        folderTitle={folderTitle}
+                        messageCount={mails.length}
+                        isLoading={isLoading}
+                        isMenuOpen={isFolderDrawerOpen}
+                        onOpenMenu={() => setIsFolderDrawerOpen(true)}
+                    />
+                )}
 
                 <section className="mail-content">
                     {isDetailsOpen

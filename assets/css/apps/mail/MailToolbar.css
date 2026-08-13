@@ -6,6 +6,7 @@
     min-height: var(--mail-toolbar-height);
     padding: 0 1.5rem;
     border-bottom: 1px solid var(--mail-clr-border);
+    background: var(--mail-clr-surface);
 }
 
 .mail-toolbar h1 {
@@ -41,4 +42,8 @@
 .mail-menu-btn:focus-visible {
     outline: 2px solid var(--mail-clr-accent);
     outline-offset: 2px;
+}
+
+.mail-menu-btn:hover {
+    background: var(--mail-clr-row-action-hover);
 }

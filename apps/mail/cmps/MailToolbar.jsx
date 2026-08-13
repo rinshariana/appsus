@@ -17,7 +17,7 @@ export function MailToolbar({
                 aria-controls="mail-folder-drawer"
                 onClick={onOpenMenu}
             >
-                ☰
+                <i className="fa-solid fa-bars" aria-hidden="true" />
             </button>
             <h1>{folderTitle}</h1>
             <span className="mail-count">

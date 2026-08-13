@@ -11,6 +11,10 @@
         border-start-start-radius: 0;
     }
 
+    .mail-main.details-open {
+        grid-template-rows: minmax(0, 1fr);
+    }
+
     .mail-toolbar {
         grid-template-columns: auto minmax(0, 1fr) auto;
         gap: .75rem;
@@ -96,6 +100,28 @@
         padding: .5rem .75rem;
     }
 
+    .mail-loading-row {
+        grid-template-columns: minmax(0, 1fr) 52px;
+        grid-template-areas:
+            "correspondent date"
+            "summary summary";
+        gap: .5rem .625rem;
+        min-height: var(--mail-row-height);
+        padding: .5rem .75rem;
+    }
+
+    .mail-loading-row .correspondent {
+        grid-area: correspondent;
+    }
+
+    .mail-loading-row .summary {
+        grid-area: summary;
+    }
+
+    .mail-loading-row .date {
+        grid-area: date;
+    }
+
     .mail-correspondent {
         grid-area: correspondent;
     }
@@ -115,7 +141,67 @@
     }
 
     .mail-details {
-        padding: 1rem;
+        width: 100%;
+    }
+
+    .mail-details-actions {
+        padding-inline: .375rem;
+    }
+
+    .mail-details-message {
+        padding: 1.25rem 1rem 2rem;
+    }
+
+    .mail-details-loading-actions {
+        padding-inline: .375rem;
+    }
+
+    .mail-details-loading-message {
+        padding: 1.25rem 1rem;
+    }
+
+    .mail-details-loading-message .subject {
+        width: 75%;
+        margin: 0 0 1.25rem;
+    }
+
+    .mail-loading-sender {
+        grid-template-columns: 36px minmax(0, 1fr);
+    }
+
+    .mail-loading-sender .avatar {
+        width: 36px;
+        height: 36px;
+    }
+
+    .mail-loading-sender .timestamp {
+        display: none;
+    }
+
+    .mail-details-loading-message .body-line {
+        margin-inline-start: 0;
+    }
+
+    .mail-details-message h2 {
+        margin: 0 0 1.25rem;
+        font-size: 1.25rem;
+    }
+
+    .mail-details-sender {
+        grid-template-columns: 36px minmax(0, 1fr);
+    }
+
+    .mail-details-avatar {
+        width: 36px;
+        height: 36px;
+    }
+
+    .mail-details-sender time {
+        grid-column: 2;
+    }
+
+    .mail-details-body {
+        margin: 1.5rem 0 0;
     }
 }
 
@@ -125,5 +211,10 @@
     .mail-row-time,
     .mail-row-delete {
         transition: none;
+    }
+
+    .mail-loading-bar,
+    .mail-loading-circle {
+        animation: none;
     }
 }

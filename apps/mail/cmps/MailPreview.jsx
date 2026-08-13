@@ -15,6 +15,7 @@ export function MailPreview({ mail, onDelete }) {
     const bodySnippet = (mail.body && mail.body.trim()) || 'No message body'
     const formattedDate = formatMailDate(timestamp)
     const deleteLabel = mail.removedAt ? 'Delete forever' : 'Move to Trash'
+    const pendingLabel = mail.removedAt ? 'Deleting message…' : 'Moving message to Trash…'
 
     async function onRemoveMail() {
         if (isDeleting) return
@@ -55,12 +56,15 @@ export function MailPreview({ mail, onDelete }) {
             <button
                 className="mail-row-delete"
                 type="button"
-                aria-label={`${deleteLabel}: ${subject}`}
-                title={deleteLabel}
+                aria-label={`${isDeleting ? pendingLabel : deleteLabel}: ${subject}`}
+                title={isDeleting ? pendingLabel : deleteLabel}
                 disabled={isDeleting}
                 onClick={onRemoveMail}
             >
-                <i className="fa-regular fa-trash-can" aria-hidden="true" />
+                <i
+                    className={isDeleting ? 'fa-solid fa-spinner fa-spin' : 'fa-regular fa-trash-can'}
+                    aria-hidden="true"
+                />
             </button>
         </li>
     )

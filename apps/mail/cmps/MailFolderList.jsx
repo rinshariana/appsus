@@ -1,7 +1,7 @@
 const MAIL_FOLDERS = [
-    { status: 'inbox', label: 'Inbox' },
-    { status: 'sent', label: 'Sent' },
-    { status: 'trash', label: 'Trash' },
+    { status: 'inbox', label: 'Inbox', icon: 'fa-solid fa-inbox' },
+    { status: 'sent', label: 'Sent', icon: 'fa-regular fa-paper-plane' },
+    { status: 'trash', label: 'Trash', icon: 'fa-regular fa-trash-can' },
 ]
 
 export function MailFolderList({
@@ -31,7 +31,7 @@ export function MailFolderList({
                     aria-label="Close mail folders"
                     onClick={onClose}
                 >
-                    ×
+                    <i className="fa-solid fa-xmark" aria-hidden="true" />
                 </button>
 
                 <button
@@ -40,7 +40,8 @@ export function MailFolderList({
                     disabled
                     aria-describedby="compose-unavailable"
                 >
-                    Compose
+                    <i className="fa-solid fa-plus" aria-hidden="true" />
+                    <span>Compose</span>
                 </button>
                 <p id="compose-unavailable" className="mail-compose-help">
                     Compose will be available in a later version.
@@ -58,7 +59,10 @@ export function MailFolderList({
                                 aria-current={isActive ? 'page' : undefined}
                                 onClick={() => onSelectFolder(folder.status)}
                             >
-                                <span>{folder.label}</span>
+                                <span className="mail-folder-label">
+                                    <i className={folder.icon} aria-hidden="true" />
+                                    <span>{folder.label}</span>
+                                </span>
                                 {folder.status === 'inbox' && unreadCount > 0 && (
                                     <span className="mail-unread-badge" aria-label={`${unreadCount} unread`}>
                                         {unreadCount}

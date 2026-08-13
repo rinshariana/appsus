@@ -16,6 +16,10 @@
     --mail-clr-backdrop: rgb(0 0 0 / 45%);
     --mail-clr-row-read: #f2f6fc;
     --mail-clr-row-action-hover: #e6e9ed;
+    --mail-clr-avatar: #5f6368;
+    --mail-clr-folder-hover: #e9eef6;
+    --mail-clr-loading: #e7e9ec;
+    --mail-clr-loading-highlight: #f5f6f7;
 
     --mail-sidebar-width: 220px;
     --mail-toolbar-height: 64px;

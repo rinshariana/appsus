@@ -22,6 +22,10 @@
 }
 
 .mail-compose-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
     width: 100%;
     min-height: 56px;
     margin-bottom: 1rem;
@@ -30,6 +34,10 @@
     background: var(--mail-clr-compose);
     font-weight: 600;
     text-align: center;
+}
+
+.mail-compose-btn i {
+    font-size: 1rem;
 }
 
 .mail-compose-btn:disabled {
@@ -68,6 +76,22 @@
     font-weight: 700;
 }
 
+.mail-folder-btn:hover:not(.active) {
+    background: var(--mail-clr-folder-hover);
+}
+
+.mail-folder-label {
+    display: inline-grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: center;
+    gap: .75rem;
+}
+
+.mail-folder-label i {
+    width: 24px;
+    text-align: center;
+}
+
 .mail-folder-btn:focus-visible,
 .mail-drawer-close:focus-visible {
     outline: 2px solid var(--mail-clr-accent);
@@ -81,9 +105,10 @@
     min-width: 24px;
     height: 24px;
     padding: 0 .4rem;
-    border-radius: 999px;
-    color: var(--mail-clr-on-accent);
-    background: var(--mail-clr-accent);
+    border-radius: 50%;
+    color: inherit;
+    background: transparent;
+    font-weight: 700;
     font-size: .75rem;
     line-height: 1;
 }
