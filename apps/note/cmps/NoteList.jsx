@@ -1,6 +1,6 @@
 import { NotePreview } from "./NotePreview.jsx"
 
-export function NoteList({ notes, onRemoveNote }) {
+export function NoteList({ notes, onRemoveNote, onEditNote, onTogglePin }) {
     const pinnedNotes = notes.filter(note => note.isPinned)
     const otherNotes = notes.filter(note => !note.isPinned)
 
@@ -11,18 +11,22 @@ export function NoteList({ notes, onRemoveNote }) {
                 groupType="pinned"
                 notes={pinnedNotes} 
                 onRemoveNote={onRemoveNote}
+                onEditNote={onEditNote}
+                onTogglePin={onTogglePin}
             />
             <NoteGroup
                 title="Others"
                 groupType="others" 
                 notes={otherNotes} 
                 onRemoveNote={onRemoveNote}
+                onEditNote={onEditNote}
+                onTogglePin={onTogglePin}
             />
         </section>
     )
 }
 
-function NoteGroup({ title, groupType, notes, onRemoveNote }) {
+function NoteGroup({ title, groupType, notes, onRemoveNote, onEditNote, onTogglePin }) {
     if (!notes.length) return null
 
     return (
@@ -35,6 +39,8 @@ function NoteGroup({ title, groupType, notes, onRemoveNote }) {
                         <NotePreview 
                             note={note}
                             onRemoveNote={onRemoveNote}
+                            onEditNote={onEditNote}
+                            onTogglePin={onTogglePin}
                         />
                     </li>
                 ))}

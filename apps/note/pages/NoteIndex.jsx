@@ -1,18 +1,20 @@
 import { noteService } from '../services/note.service.js'
 import { NoteList } from '../cmps/NoteList.jsx'
 import { NoteAdd } from '../cmps/NoteAdd.jsx'
+import { NoteEditor } from '../cmps/NoteEditor.jsx'
 
 const { useState, useEffect } = React
 
 export function NoteIndex() {
     const [notes, setNotes] = useState(null)
+    const [selectedNote, setSelectedNote] = useState(null)
 
     useEffect(() => {
         loadNotes()
     }, [])
 
     function loadNotes() {
-        noteService.query()
+        return noteService.query()
             .then(setNotes)
     }
 
@@ -32,6 +34,26 @@ export function NoteIndex() {
             })
     }
 
+    function onEditNote(note) {
+        setSelectedNote(note)
+    }
+
+    function onSaveEditedNote(note) {
+        return noteService.save(note)
+            .then(() => loadNotes())
+            .then(() => setSelectedNote(null))
+    }
+
+    function onTogglePin(note) {
+        const updatedNote = {
+            ...note,
+            isPinned: !note.isPinned
+        }
+
+        return noteService.save(updatedNote)
+            .then(() => loadNotes())
+    }
+
 
     if (!notes) return <div>Loading...</div>
 
@@ -39,9 +61,18 @@ export function NoteIndex() {
         <section className="note-index">
             <h2>Keep</h2>
             <NoteAdd onAddNote={onAddNote} />
-            <NoteList 
+            {selectedNote && (
+                <NoteEditor
+                    initialNote={selectedNote}
+                    onSave={onSaveEditedNote}
+                />
+            )
+            }
+            <NoteList
                 notes={notes}
                 onRemoveNote={onRemoveNote}
+                onEditNote={onEditNote}
+                onTogglePin={onTogglePin}
             />
         </section>
     )

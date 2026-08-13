@@ -9,23 +9,23 @@
 - [x] Load notes from `localStorage`
 
 ## 2. First Complete Slice: Text Notes
-- [ ] Create `NoteTxt`
-- [ ] Implement dynamic rendering from `NotePreview`
-- [ ] Style note cards close to Google Keep
-- [ ] Add basic pinned/unpinned structure
+- [x] Create `NoteTxt`
+- [x] Implement dynamic rendering from `NotePreview`
+- [x] Style note cards close to Google Keep
+- [x] Add basic pinned/unpinned structure
 - [ ] Add basic responsive note layout
 
 ## 3. CRUD for Text Notes
-- [ ] Add text note
-- [ ] Delete note
-- [ ] Edit note with controlled inputs
-- [ ] Save notes through `noteService`
+- [x] Add text note
+- [x] Delete note
+- [x] Edit note with controlled inputs
+- [x] Save notes through `noteService`
 - [ ] Add success/error messages
-- [ ] Style controls as they are implemented
+- [x] Style controls as they are implemented
 
 ## 4. Core Note Actions
 - [ ] Change background color
-- [ ] Pin / unpin
+- [x] Pin / unpin
 - [ ] Duplicate note
 - [ ] Filter by search
 - [ ] Filter by note type
