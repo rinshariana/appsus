@@ -1,0 +1,34 @@
+.mail-index {
+    --mail-font-family: 'Roboto', Arial, sans-serif;
+
+    --mail-clr-page: #f6f8fc;
+    --mail-clr-surface: #fff;
+    --mail-clr-text-primary: #202124;
+    --mail-clr-text-secondary: #3c4043;
+    --mail-clr-text-muted: #5f6368;
+    --mail-clr-border: #e0e3e7;
+    --mail-clr-accent: #0b57d0;
+    --mail-clr-compose: #c2e7ff;
+    --mail-clr-compose-text: #44546f;
+    --mail-clr-folder-active: #d3e3fd;
+    --mail-clr-folder-active-text: #001d35;
+    --mail-clr-on-accent: #fff;
+    --mail-clr-backdrop: rgb(0 0 0 / 45%);
+    --mail-clr-row-read: #f2f6fc;
+    --mail-clr-row-action-hover: #e6e9ed;
+    --mail-clr-avatar: #5f6368;
+    --mail-clr-folder-hover: #e9eef6;
+    --mail-clr-loading: #e7e9ec;
+    --mail-clr-loading-highlight: #f5f6f7;
+
+    --mail-sidebar-width: 220px;
+    --mail-toolbar-height: 64px;
+    --mail-row-height: 40px;
+    --mail-touch-target: 44px;
+    --mail-shell-radius: 16px;
+    --mail-folder-radius: 22px;
+    --mail-drawer-shadow: 4px 0 16px rgb(0 0 0 / 20%);
+    --mail-row-hover-shadow: 0 1px 2px rgb(60 64 67 / 30%),
+        0 1px 3px 1px rgb(60 64 67 / 15%);
+    --mail-transition-duration: 180ms;
+}
