@@ -7,12 +7,14 @@ export function NoteList({ notes, onRemoveNote }) {
     return (
         <section className="notes-container">
             <NoteGroup
-                title="Pinned" 
+                title="Pinned"
+                groupType="pinned"
                 notes={pinnedNotes} 
                 onRemoveNote={onRemoveNote}
             />
             <NoteGroup
-                title="Others" 
+                title="Others"
+                groupType="others" 
                 notes={otherNotes} 
                 onRemoveNote={onRemoveNote}
             />
@@ -20,11 +22,11 @@ export function NoteList({ notes, onRemoveNote }) {
     )
 }
 
-function NoteGroup({ title, notes, onRemoveNote }) {
+function NoteGroup({ title, groupType, notes, onRemoveNote }) {
     if (!notes.length) return null
 
     return (
-        <section className="note-group">
+        <section className={`note-group note-group--${groupType}`}>
             <h2>{title}</h2>
 
             <ul className="note-list">
