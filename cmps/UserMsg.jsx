@@ -15,17 +15,25 @@ export function UserMsg() {
       }
       timeoutIdRef.current = setTimeout(closeMsg, 3000)
     })
-    return unsubscribe
+    return () => {
+      unsubscribe()
+      if (timeoutIdRef.current) clearTimeout(timeoutIdRef.current)
+    }
   }, [])
 
   function closeMsg() {
     setMsg(null)
   }
-  const className = (msg)? `${msg.type} open` : '' 
+  if (!msg) return null
+
   return (
-    <section className={`user-msg ${className}`}>
-      <button onClick={closeMsg}>x</button>
-      {msg && msg.txt}
+    <section
+      className={`user-msg ${msg.type} open`}
+      role={msg.type === 'error' ? 'alert' : 'status'}
+      aria-live={msg.type === 'error' ? 'assertive' : 'polite'}
+    >
+      <span>{msg.txt}</span>
+      <button type="button" aria-label="Dismiss message" onClick={closeMsg}>×</button>
     </section>
   )
 }

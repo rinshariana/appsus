@@ -11,12 +11,14 @@ export function MailToolbar({
     onOpenMenu,
     onSetFilter,
     onSetSort,
+    menuButtonRef,
 }) {
     const messageCountLabel = `${messageCount} ${messageCount === 1 ? 'message' : 'messages'}`
 
     return (
         <header className="mail-toolbar">
             <button
+                ref={menuButtonRef}
                 className="mail-menu-btn"
                 type="button"
                 aria-label="Open mail folders"
@@ -28,7 +30,7 @@ export function MailToolbar({
             </button>
 
             <section className="mail-toolbar-heading">
-                <h1>{folderTitle}</h1>
+                <h1 tabIndex="-1">{folderTitle}</h1>
                 <span className="mail-count">
                     {isLoading ? 'Loading…' : messageCountLabel}
                 </span>

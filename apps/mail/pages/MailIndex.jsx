@@ -1,4 +1,4 @@
-const { useEffect, useState } = React
+const { useEffect, useRef, useState } = React
 const { Outlet, useMatch, useNavigate } = ReactRouterDOM
 
 import { showErrorMsg, showSuccessMsg } from '../../../services/event-bus.service.js'
@@ -17,8 +17,19 @@ export function MailIndex() {
     const [isFolderDrawerOpen, setIsFolderDrawerOpen] = useState(false)
     const [isComposeOpen, setIsComposeOpen] = useState(false)
     const [refreshCount, setRefreshCount] = useState(0)
+    const menuButtonRef = useRef(null)
+    const drawerCloseButtonRef = useRef(null)
+    const composeButtonRef = useRef(null)
+    const composeOpenerRef = useRef(null)
+    const drawerFocusTimeoutRef = useRef(null)
+    const detailsReturnFocusIdRef = useRef(undefined)
     const navigate = useNavigate()
     const isDetailsOpen = Boolean(useMatch('/mail/:mailId'))
+    const isMobile = useIsMobile()
+
+    useEffect(() => {
+        return () => clearTimeout(drawerFocusTimeoutRef.current)
+    }, [])
 
     useEffect(() => {
         let isActive = true
@@ -35,6 +46,7 @@ export function MailIndex() {
             })
             .catch(err => {
                 if (!isActive) return
+                setMails([])
                 showErrorMsg('Could not load mail. Please try again.')
                 console.error('Failed to load mail:', err)
             })
@@ -48,21 +60,50 @@ export function MailIndex() {
     }, [filterBy, sortBy, refreshCount])
 
     useEffect(() => {
-        if (!isFolderDrawerOpen) return
+        if (!isFolderDrawerOpen || !isMobile) return
 
+        const inertElements = [
+            document.querySelector('.app-header'),
+            document.querySelector('.mail-main'),
+        ].filter(Boolean)
+
+        inertElements.forEach(element => {
+            element.inert = true
+        })
         function onKeyDown(ev) {
-            if (ev.key === 'Escape') setIsFolderDrawerOpen(false)
+            if (ev.key === 'Escape') onCloseFolderDrawer()
         }
 
         window.addEventListener('keydown', onKeyDown)
-        return () => window.removeEventListener('keydown', onKeyDown)
-    }, [isFolderDrawerOpen])
+        return () => {
+            window.removeEventListener('keydown', onKeyDown)
+            inertElements.forEach(element => {
+                element.inert = false
+            })
+        }
+    }, [isFolderDrawerOpen, isMobile])
+
+    useEffect(() => {
+        if (isDetailsOpen || isLoading || detailsReturnFocusIdRef.current === undefined) return
+
+        const mailId = detailsReturnFocusIdRef.current
+        detailsReturnFocusIdRef.current = undefined
+
+        requestAnimationFrame(() => {
+            const target = mailId
+                ? document.querySelector(`[data-mail-id="${mailId}"]`)
+                : null
+            const fallback = document.querySelector('.mail-toolbar h1')
+            const focusTarget = target || fallback
+            if (focusTarget) focusTarget.focus()
+        })
+    }, [isDetailsOpen, isLoading, mails])
 
     function onSelectFolder(status) {
         setIsLoading(true)
         setFilterBy(prevFilter => ({ ...prevFilter, status }))
         navigate('/mail')
-        setIsFolderDrawerOpen(false)
+        onCloseFolderDrawer()
     }
 
     function onSetFilter(partialFilter) {
@@ -74,8 +115,38 @@ export function MailIndex() {
     }
 
     function onOpenCompose() {
+        composeOpenerRef.current = isMobile
+            ? menuButtonRef.current
+            : document.activeElement
         setIsFolderDrawerOpen(false)
         setIsComposeOpen(true)
+    }
+
+    function onCloseCompose() {
+        setIsComposeOpen(false)
+        requestAnimationFrame(() => {
+            if (composeOpenerRef.current) composeOpenerRef.current.focus()
+        })
+    }
+
+    function onOpenFolderDrawer() {
+        setIsFolderDrawerOpen(true)
+        clearTimeout(drawerFocusTimeoutRef.current)
+        drawerFocusTimeoutRef.current = setTimeout(() => {
+            const closeButton = drawerCloseButtonRef.current ||
+                document.querySelector('.mail-drawer-close')
+            if (closeButton) closeButton.focus()
+        }, 200)
+    }
+
+    function onCloseFolderDrawer() {
+        clearTimeout(drawerFocusTimeoutRef.current)
+        setIsFolderDrawerOpen(false)
+        if (isMobile) {
+            requestAnimationFrame(() => {
+                if (menuButtonRef.current) menuButtonRef.current.focus()
+            })
+        }
     }
 
     async function onSendMail(draft) {
@@ -151,7 +222,31 @@ export function MailIndex() {
         }
     }
 
-    function onCloseDetails() {
+    async function onToggleStar(mail) {
+        try {
+            const savedMail = await mailService.toggleStar(mail.id)
+
+            setMails(currentMails => {
+                if (filterBy.status === 'starred' && !savedMail.isStarred) {
+                    return currentMails.filter(currentMail => currentMail.id !== savedMail.id)
+                }
+
+                return currentMails.map(currentMail => {
+                    return currentMail.id === savedMail.id ? savedMail : currentMail
+                })
+            })
+
+            return savedMail
+        } catch (err) {
+            showErrorMsg('Could not update the star for this message.')
+            console.error('Failed to update mail star:', err)
+            throw err
+        }
+    }
+
+    function onCloseDetails(mailId = null) {
+        detailsReturnFocusIdRef.current = mailId
+        setIsLoading(true)
         navigate('/mail')
         setRefreshCount(currentCount => currentCount + 1)
     }
@@ -175,8 +270,11 @@ export function MailIndex() {
                 unreadCount={unreadCount}
                 isOpen={isFolderDrawerOpen}
                 onSelectFolder={onSelectFolder}
-                onClose={() => setIsFolderDrawerOpen(false)}
+                onClose={onCloseFolderDrawer}
                 onCompose={onOpenCompose}
+                composeButtonRef={composeButtonRef}
+                closeButtonRef={drawerCloseButtonRef}
+                isMobile={isMobile}
             />
 
             <main className={`mail-main ${isDetailsOpen ? 'details-open' : ''}`}>
@@ -188,9 +286,10 @@ export function MailIndex() {
                         isMenuOpen={isFolderDrawerOpen}
                         filterBy={filterBy}
                         sortBy={sortBy}
-                        onOpenMenu={() => setIsFolderDrawerOpen(true)}
+                        onOpenMenu={onOpenFolderDrawer}
                         onSetFilter={onSetFilter}
                         onSetSort={onSetSort}
+                        menuButtonRef={menuButtonRef}
                     />
                 )}
 
@@ -200,6 +299,7 @@ export function MailIndex() {
                             mails,
                             onMarkAsRead,
                             onDeleteMail,
+                            onToggleStar,
                             onCloseDetails,
                         }} />
                         : <MailList
@@ -207,6 +307,7 @@ export function MailIndex() {
                             isLoading={isLoading}
                             hasActiveFilters={Boolean(filterBy.txt.trim()) || filterBy.isRead !== null}
                             onDeleteMail={onDeleteMail}
+                            onToggleStar={onToggleStar}
                         />
                     }
                 </section>
@@ -215,10 +316,26 @@ export function MailIndex() {
             {isComposeOpen && (
                 <MailCompose
                     onSend={onSendMail}
-                    onClose={() => setIsComposeOpen(false)}
+                    onClose={onCloseCompose}
                 />
             )}
         </section>
     )
+}
+
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(() => {
+        return window.matchMedia('(max-width: 719px)').matches
+    })
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(max-width: 719px)')
+        const onChange = event => setIsMobile(event.matches)
+
+        mediaQuery.addEventListener('change', onChange)
+        return () => mediaQuery.removeEventListener('change', onChange)
+    }, [])
+
+    return isMobile
 }
 

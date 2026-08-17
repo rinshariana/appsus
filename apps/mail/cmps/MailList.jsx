@@ -1,6 +1,12 @@
 import { MailPreview } from './MailPreview.jsx'
 
-export function MailList({ mails, isLoading, hasActiveFilters, onDeleteMail }) {
+export function MailList({
+    mails,
+    isLoading,
+    hasActiveFilters,
+    onDeleteMail,
+    onToggleStar,
+}) {
     if (isLoading) {
         return (
             <div className="mail-list mail-list-loading" role="status">
@@ -34,6 +40,7 @@ export function MailList({ mails, isLoading, hasActiveFilters, onDeleteMail }) {
                 <MailPreview
                     mail={mail}
                     onDelete={onDeleteMail}
+                    onToggleStar={onToggleStar}
                     key={mail.id}
                 />
             ))}

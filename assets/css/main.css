@@ -23,6 +23,7 @@
 @import './apps/mail/MailFilter.css';
 @import './apps/mail/MailSort.css';
 @import './apps/mail/MailList.css';
+@import './apps/mail/MailStarButton.css';
 @import './apps/mail/MailPreview.css';
 @import './apps/mail/MailDetails.css';
 @import './apps/mail/MailCompose.css';

@@ -1,5 +1,6 @@
 const MAIL_FOLDERS = [
     { status: 'inbox', label: 'Inbox', icon: 'fa-solid fa-inbox' },
+    { status: 'starred', label: 'Starred', icon: 'fa-regular fa-star' },
     { status: 'sent', label: 'Sent', icon: 'fa-regular fa-paper-plane' },
     { status: 'trash', label: 'Trash', icon: 'fa-regular fa-trash-can' },
 ]
@@ -11,6 +12,9 @@ export function MailFolderList({
     onSelectFolder,
     onClose,
     onCompose,
+    composeButtonRef,
+    closeButtonRef,
+    isMobile,
 }) {
     return (
         <React.Fragment>
@@ -18,24 +22,31 @@ export function MailFolderList({
                 className={`mail-drawer-backdrop ${isOpen ? 'open' : ''}`}
                 type="button"
                 aria-label="Close mail folders"
-                tabIndex={isOpen ? 0 : -1}
+                tabIndex="-1"
                 onClick={onClose}
             />
 
             <aside
                 id="mail-folder-drawer"
                 className={`mail-folder-list ${isOpen ? 'open' : ''}`}
+                role={isMobile ? 'dialog' : undefined}
+                aria-label={isMobile ? 'Mail folders' : undefined}
+                aria-modal={isMobile ? 'true' : undefined}
+                aria-hidden={isMobile ? !isOpen : undefined}
             >
                 <button
+                    ref={closeButtonRef}
                     className="mail-drawer-close"
                     type="button"
                     aria-label="Close mail folders"
+                    autoFocus={isMobile && isOpen}
                     onClick={onClose}
                 >
                     <i className="fa-solid fa-xmark" aria-hidden="true" />
                 </button>
 
                 <button
+                    ref={composeButtonRef}
                     className="mail-compose-btn"
                     type="button"
                     onClick={onCompose}

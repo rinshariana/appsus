@@ -22,7 +22,15 @@
     gap: 1rem;
     min-width: 0;
     min-height: var(--mail-row-height);
-    padding: .625rem 1.25rem;
+    padding: .625rem 1.25rem .625rem 3.25rem;
+}
+
+.mail-row-star {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: .5rem;
+    z-index: 3;
+    transform: translateY(-50%);
 }
 
 .mail-correspondent,

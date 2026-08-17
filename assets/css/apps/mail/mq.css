@@ -21,7 +21,7 @@
 @media (max-width: 719px) {
     .mail-index {
         --mail-toolbar-height: 56px;
-        --mail-row-height: 60px;
+        --mail-row-height: 64px;
 
         grid-template-columns: minmax(0, 1fr);
     }
@@ -155,7 +155,7 @@
             "correspondent time"
             "summary summary";
         gap: .2rem .625rem;
-        padding: .5rem .75rem;
+        padding: .5rem 3.25rem;
     }
 
     .mail-loading-row {
@@ -190,6 +190,26 @@
 
     .mail-row-time {
         grid-area: time;
+    }
+
+    .mail-row-star,
+    .mail-row-delete {
+        width: var(--mail-touch-target);
+        height: var(--mail-touch-target);
+    }
+
+    .mail-row-star {
+        inset-inline-start: .25rem;
+    }
+
+    .mail-row-delete {
+        inset-inline-end: .25rem;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .mail-row-time {
+        margin-inline-end: .25rem;
     }
 
     .mail-correspondent,

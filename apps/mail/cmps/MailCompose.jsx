@@ -1,4 +1,4 @@
-const { useEffect, useState } = React
+const { useEffect, useRef, useState } = React
 
 import { mailService } from '../services/mail.service.js'
 
@@ -9,17 +9,68 @@ export function MailCompose({ onSend, onClose }) {
     const [recipientError, setRecipientError] = useState('')
     const [submitError, setSubmitError] = useState('')
     const [isSending, setIsSending] = useState(false)
+    const [isMobile, setIsMobile] = useState(() => {
+        return window.matchMedia('(max-width: 719px)').matches
+    })
+    const dialogRef = useRef(null)
     const loggedinUser = mailService.getLoggedinUser()
 
     useEffect(() => {
+        const mediaQuery = window.matchMedia('(max-width: 719px)')
+        const onChange = event => setIsMobile(event.matches)
+
+        mediaQuery.addEventListener('change', onChange)
+        return () => mediaQuery.removeEventListener('change', onChange)
+    }, [])
+
+    useEffect(() => {
+        const inertElements = isMobile
+            ? [
+                document.querySelector('.app-header'),
+                document.querySelector('.mail-folder-list'),
+                document.querySelector('.mail-main'),
+            ].filter(Boolean)
+            : []
+
+        inertElements.forEach(element => {
+            element.inert = true
+        })
+
         function onKeyDown(ev) {
-            if (ev.key !== 'Escape' || isSending) return
-            onClose()
+            if (ev.key === 'Escape' && !isSending) {
+                onClose()
+                return
+            }
+
+            if (ev.key !== 'Tab' || !isMobile) return
+
+            const focusableElements = dialogRef.current
+                ? Array.from(dialogRef.current.querySelectorAll(
+                    'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), select:not(:disabled), [tabindex]:not([tabindex="-1"])'
+                ))
+                : []
+            if (!focusableElements.length) return
+
+            const firstElement = focusableElements[0]
+            const lastElement = focusableElements[focusableElements.length - 1]
+
+            if (ev.shiftKey && document.activeElement === firstElement) {
+                ev.preventDefault()
+                lastElement.focus()
+            } else if (!ev.shiftKey && document.activeElement === lastElement) {
+                ev.preventDefault()
+                firstElement.focus()
+            }
         }
 
         window.addEventListener('keydown', onKeyDown)
-        return () => window.removeEventListener('keydown', onKeyDown)
-    }, [isSending, onClose])
+        return () => {
+            window.removeEventListener('keydown', onKeyDown)
+            inertElements.forEach(element => {
+                element.inert = false
+            })
+        }
+    }, [isMobile, isSending, onClose])
 
     function onChange({ target }) {
         const { name, value } = target
@@ -53,7 +104,13 @@ export function MailCompose({ onSend, onClose }) {
     }
 
     return (
-        <section className="mail-compose" role="dialog" aria-modal="false" aria-labelledby="mail-compose-title">
+        <section
+            className="mail-compose"
+            ref={dialogRef}
+            role="dialog"
+            aria-modal={isMobile}
+            aria-labelledby="mail-compose-title"
+        >
             <header className="mail-compose-header">
                 <h2 id="mail-compose-title">New Message</h2>
                 <button

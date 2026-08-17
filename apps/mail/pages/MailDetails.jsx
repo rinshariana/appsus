@@ -1,19 +1,22 @@
-const { useEffect, useState } = React
+const { useEffect, useRef, useState } = React
 const { useNavigate, useOutletContext, useParams } = ReactRouterDOM
 
 import { showErrorMsg } from '../../../services/event-bus.service.js'
 import { mailService } from '../services/mail.service.js'
+import { MailStarButton } from '../cmps/MailStarButton.jsx'
 
 export function MailDetails() {
     const [mail, setMail] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isDeleting, setIsDeleting] = useState(false)
+    const detailsRef = useRef(null)
     const { mailId } = useParams()
     const navigate = useNavigate()
     const {
         mails,
         onMarkAsRead,
         onDeleteMail,
+        onToggleStar,
         onCloseDetails,
     } = useOutletContext()
 
@@ -37,7 +40,6 @@ export function MailDetails() {
             } catch (err) {
                 if (!isActive) return
                 showErrorMsg('Message not found.')
-                console.warn('Mail details route not found:', err)
                 navigate('/mail', { replace: true })
                 return
             }
@@ -55,6 +57,9 @@ export function MailDetails() {
             if (!isActive) return
             setMail(loadedMail)
             setIsLoading(false)
+            requestAnimationFrame(() => {
+                if (detailsRef.current) detailsRef.current.focus()
+            })
         }
     }, [mailId])
 
@@ -91,6 +96,7 @@ export function MailDetails() {
     const pendingDeleteLabel = mail.removedAt ? 'Deleting message…' : 'Moving message to Trash…'
     const subject = mail.subject || '(No subject)'
     const senderInitial = (mail.from || '?').charAt(0).toUpperCase()
+    const timestamp = getValidTimestamp(mail.sentAt || mail.createdAt)
 
     async function onRemoveMail() {
         if (isDeleting) return
@@ -98,7 +104,7 @@ export function MailDetails() {
         setIsDeleting(true)
         try {
             await onDeleteMail(mail)
-            onCloseDetails()
+            onCloseDetails(mail.id)
         } catch (err) {
             setIsDeleting(false)
         }
@@ -109,8 +115,19 @@ export function MailDetails() {
         navigate(`/mail/${targetMail.id}`)
     }
 
+    async function onToggleStarFromDetails() {
+        const savedMail = await onToggleStar(mail)
+        setMail(savedMail)
+        return savedMail
+    }
+
     return (
-        <article className="mail-details">
+        <article
+            className="mail-details"
+            ref={detailsRef}
+            tabIndex="-1"
+            aria-labelledby="mail-details-subject"
+        >
             <nav className="mail-details-actions" aria-label="Message actions">
                 <button
                     className="mail-details-action"
@@ -118,7 +135,7 @@ export function MailDetails() {
                     aria-label="Back to mail"
                     title="Back to mail"
                     disabled={isDeleting}
-                    onClick={onCloseDetails}
+                    onClick={() => onCloseDetails(mail.id)}
                 >
                     <i className="fa-solid fa-arrow-left" aria-hidden="true" />
                 </button>
@@ -136,6 +153,12 @@ export function MailDetails() {
                         aria-hidden="true"
                     />
                 </button>
+
+                <MailStarButton
+                    className="mail-details-star"
+                    mail={mail}
+                    onToggle={onToggleStarFromDetails}
+                />
 
                 <span className="mail-details-action-spacer" />
 
@@ -163,7 +186,7 @@ export function MailDetails() {
             </nav>
 
             <section className="mail-details-message">
-                <h2>{subject}</h2>
+                <h2 id="mail-details-subject">{subject}</h2>
 
                 <header className="mail-details-sender">
                     <span className="mail-details-avatar" aria-hidden="true">
@@ -175,15 +198,22 @@ export function MailDetails() {
                         <span>to {mail.to}</span>
                     </span>
 
-                    <time dateTime={new Date(mail.sentAt || mail.createdAt).toISOString()}>
-                        {formatFullDate(mail.sentAt || mail.createdAt)}
-                    </time>
+                    {timestamp && (
+                        <time dateTime={new Date(timestamp).toISOString()}>
+                            {formatFullDate(timestamp)}
+                        </time>
+                    )}
                 </header>
 
                 <p className="mail-details-body">{mail.body || 'No message body'}</p>
             </section>
         </article>
     )
+}
+
+function getValidTimestamp(timestamp) {
+    if (!timestamp) return null
+    return Number.isNaN(new Date(timestamp).getTime()) ? null : timestamp
 }
 
 function formatFullDate(timestamp) {

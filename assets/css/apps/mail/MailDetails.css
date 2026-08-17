@@ -4,6 +4,10 @@
     background: var(--mail-clr-surface);
 }
 
+.mail-details:focus {
+    outline: none;
+}
+
 .mail-details-status {
     display: grid;
     grid-template-rows: 52px minmax(0, 1fr);
@@ -93,6 +97,11 @@
     color: var(--mail-clr-text-secondary);
     background: transparent;
     cursor: pointer;
+}
+
+.mail-details-star {
+    width: var(--mail-touch-target);
+    height: var(--mail-touch-target);
 }
 
 .mail-details-action:hover:not(:disabled) {
