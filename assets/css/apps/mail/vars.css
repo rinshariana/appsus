@@ -20,6 +20,8 @@
     --mail-clr-folder-hover: #e9eef6;
     --mail-clr-loading: #e7e9ec;
     --mail-clr-loading-highlight: #f5f6f7;
+    --mail-clr-compose-header: #404040;
+    --mail-clr-compose-error: #b3261e;
 
     --mail-sidebar-width: 220px;
     --mail-toolbar-height: 64px;
@@ -30,5 +32,6 @@
     --mail-drawer-shadow: 4px 0 16px rgb(0 0 0 / 20%);
     --mail-row-hover-shadow: 0 1px 2px rgb(60 64 67 / 30%),
         0 1px 3px 1px rgb(60 64 67 / 15%);
+    --mail-compose-shadow: 0 8px 24px rgb(60 64 67 / 35%);
     --mail-transition-duration: 180ms;
 }

@@ -2,6 +2,7 @@ const { useEffect, useState } = React
 const { Outlet, useMatch, useNavigate } = ReactRouterDOM
 
 import { showErrorMsg, showSuccessMsg } from '../../../services/event-bus.service.js'
+import { MailCompose } from '../cmps/MailCompose.jsx'
 import { MailFolderList } from '../cmps/MailFolderList.jsx'
 import { MailList } from '../cmps/MailList.jsx'
 import { MailToolbar } from '../cmps/MailToolbar.jsx'
@@ -14,6 +15,7 @@ export function MailIndex() {
     const [unreadCount, setUnreadCount] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
     const [isFolderDrawerOpen, setIsFolderDrawerOpen] = useState(false)
+    const [isComposeOpen, setIsComposeOpen] = useState(false)
     const [refreshCount, setRefreshCount] = useState(0)
     const navigate = useNavigate()
     const isDetailsOpen = Boolean(useMatch('/mail/:mailId'))
@@ -61,6 +63,48 @@ export function MailIndex() {
         setFilterBy(prevFilter => ({ ...prevFilter, status }))
         navigate('/mail')
         setIsFolderDrawerOpen(false)
+    }
+
+    function onSetFilter(partialFilter) {
+        setFilterBy(prevFilter => ({ ...prevFilter, ...partialFilter }))
+    }
+
+    function onSetSort(partialSort) {
+        setSortBy(prevSort => ({ ...prevSort, ...partialSort }))
+    }
+
+    function onOpenCompose() {
+        setIsFolderDrawerOpen(false)
+        setIsComposeOpen(true)
+    }
+
+    async function onSendMail(draft) {
+        const now = Date.now()
+        const loggedinUser = mailService.getLoggedinUser()
+        const mailToSend = {
+            ...draft,
+            createdAt: now,
+            sentAt: now,
+            isRead: true,
+            removedAt: null,
+            from: loggedinUser.email,
+            to: draft.to.trim(),
+        }
+
+        try {
+            const savedMail = await mailService.save(mailToSend)
+
+            if (filterBy.status === 'sent') {
+                setRefreshCount(currentCount => currentCount + 1)
+            }
+
+            showSuccessMsg('Message sent.')
+            return savedMail
+        } catch (err) {
+            showErrorMsg('Could not send message.')
+            console.error('Failed to send mail:', err)
+            throw err
+        }
     }
 
     async function onMarkAsRead(mail) {
@@ -132,6 +176,7 @@ export function MailIndex() {
                 isOpen={isFolderDrawerOpen}
                 onSelectFolder={onSelectFolder}
                 onClose={() => setIsFolderDrawerOpen(false)}
+                onCompose={onOpenCompose}
             />
 
             <main className={`mail-main ${isDetailsOpen ? 'details-open' : ''}`}>
@@ -141,7 +186,11 @@ export function MailIndex() {
                         messageCount={mails.length}
                         isLoading={isLoading}
                         isMenuOpen={isFolderDrawerOpen}
+                        filterBy={filterBy}
+                        sortBy={sortBy}
                         onOpenMenu={() => setIsFolderDrawerOpen(true)}
+                        onSetFilter={onSetFilter}
+                        onSetSort={onSetSort}
                     />
                 )}
 
@@ -156,11 +205,19 @@ export function MailIndex() {
                         : <MailList
                             mails={mails}
                             isLoading={isLoading}
+                            hasActiveFilters={Boolean(filterBy.txt.trim()) || filterBy.isRead !== null}
                             onDeleteMail={onDeleteMail}
                         />
                     }
                 </section>
             </main>
+
+            {isComposeOpen && (
+                <MailCompose
+                    onSend={onSendMail}
+                    onClose={() => setIsComposeOpen(false)}
+                />
+            )}
         </section>
     )
 }

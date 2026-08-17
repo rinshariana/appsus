@@ -34,15 +34,24 @@
     background: var(--mail-clr-compose);
     font-weight: 600;
     text-align: center;
+    box-shadow: 0 1px 2px rgb(60 64 67 / 20%);
+    cursor: pointer;
+    transition: box-shadow var(--mail-transition-duration) ease,
+        background-color var(--mail-transition-duration) ease;
 }
 
 .mail-compose-btn i {
     font-size: 1rem;
 }
 
-.mail-compose-btn:disabled {
-    opacity: .65;
-    cursor: not-allowed;
+.mail-compose-btn:hover {
+    background: #b5def9;
+    box-shadow: 0 2px 5px rgb(60 64 67 / 30%);
+}
+
+.mail-compose-btn:focus-visible {
+    outline: 2px solid var(--mail-clr-accent);
+    outline-offset: 2px;
 }
 
 .mail-compose-help {

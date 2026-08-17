@@ -1,6 +1,6 @@
 import { MailPreview } from './MailPreview.jsx'
 
-export function MailList({ mails, isLoading, onDeleteMail }) {
+export function MailList({ mails, isLoading, hasActiveFilters, onDeleteMail }) {
     if (isLoading) {
         return (
             <div className="mail-list mail-list-loading" role="status">
@@ -20,7 +20,10 @@ export function MailList({ mails, isLoading, onDeleteMail }) {
         return (
             <section className="mail-list-status">
                 <i className="fa-regular fa-envelope-open" aria-hidden="true" />
-                <p>This folder is empty.</p>
+                <p>{hasActiveFilters
+                    ? 'No messages match your filters.'
+                    : 'This folder is empty.'
+                }</p>
             </section>
         )
     }

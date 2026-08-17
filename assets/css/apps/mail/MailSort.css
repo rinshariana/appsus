@@ -1,0 +1,67 @@
+.mail-sort {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: .375rem;
+}
+
+.mail-sort label {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    border: 1px solid var(--mail-clr-border);
+    border-radius: 8px;
+    color: var(--mail-clr-text-muted);
+}
+
+.mail-sort label:focus-within {
+    border-color: var(--mail-clr-accent);
+    box-shadow: inset 0 0 0 1px var(--mail-clr-accent);
+}
+
+.mail-sort select {
+    width: 92px;
+    height: 100%;
+    padding: 0 1.75rem 0 .75rem;
+    border: 0;
+    outline: 0;
+    appearance: none;
+    color: var(--mail-clr-text-secondary);
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+}
+
+.mail-sort label i {
+    position: absolute;
+    inset-inline-end: .625rem;
+    font-size: .7rem;
+    pointer-events: none;
+}
+
+.mail-sort button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    min-width: 116px;
+    height: 40px;
+    padding: 0 .75rem;
+    border: 1px solid var(--mail-clr-border);
+    border-radius: 8px;
+    color: var(--mail-clr-text-secondary);
+    background: var(--mail-clr-surface);
+    font: inherit;
+    font-size: .82rem;
+    cursor: pointer;
+}
+
+.mail-sort button:hover {
+    background: var(--mail-clr-row-action-hover);
+}
+
+.mail-sort button:focus-visible {
+    outline: 2px solid var(--mail-clr-accent);
+    outline-offset: 1px;
+}

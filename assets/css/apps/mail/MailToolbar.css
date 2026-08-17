@@ -1,12 +1,19 @@
 .mail-toolbar {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(120px, auto) minmax(440px, 1fr);
     align-items: center;
     gap: 1rem;
     min-height: var(--mail-toolbar-height);
-    padding: 0 1.5rem;
+    padding: .625rem 1.5rem;
     border-bottom: 1px solid var(--mail-clr-border);
     background: var(--mail-clr-surface);
+}
+
+.mail-toolbar-heading {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: .15rem;
 }
 
 .mail-toolbar h1 {
@@ -21,6 +28,14 @@
     color: var(--mail-clr-text-muted);
     font-size: .875rem;
     white-space: nowrap;
+}
+
+.mail-toolbar-controls {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .75rem;
 }
 
 .mail-menu-btn {

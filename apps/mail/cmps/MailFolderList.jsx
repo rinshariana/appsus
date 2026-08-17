@@ -10,6 +10,7 @@ export function MailFolderList({
     isOpen,
     onSelectFolder,
     onClose,
+    onCompose,
 }) {
     return (
         <React.Fragment>
@@ -37,15 +38,11 @@ export function MailFolderList({
                 <button
                     className="mail-compose-btn"
                     type="button"
-                    disabled
-                    aria-describedby="compose-unavailable"
+                    onClick={onCompose}
                 >
                     <i className="fa-solid fa-plus" aria-hidden="true" />
                     <span>Compose</span>
                 </button>
-                <p id="compose-unavailable" className="mail-compose-help">
-                    Compose will be available in a later version.
-                </p>
 
                 <nav aria-label="Mail folders">
                     {MAIL_FOLDERS.map(folder => {
