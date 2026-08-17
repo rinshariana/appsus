@@ -3,16 +3,25 @@ import { NoteList } from '../cmps/NoteList.jsx'
 import { NoteAdd } from '../cmps/NoteAdd.jsx'
 import { NoteEditor } from '../cmps/NoteEditor.jsx'
 import { showErrorMsg, showSuccessMsg } from '../../../services/event-bus.service.js'
+import { NoteHeader } from '../cmps/NoteHeader.jsx'
 
 const { useState, useEffect } = React
 
 export function NoteIndex() {
     const [notes, setNotes] = useState(null)
     const [selectedNote, setSelectedNote] = useState(null)
+    const [isScrolled, setIsScrolled] = useState(false)
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
     useEffect(() => {
         loadNotes()
     }, [])
+
+    function onToggleSidebar() {
+        setIsSidebarOpen(prev => !prev)
+    }
+
+
 
     function loadNotes() {
         return noteService.query()
@@ -69,22 +78,42 @@ export function NoteIndex() {
     if (!notes) return <div>Loading...</div>
 
     return (
-        <section className="note-index">
-            <h2>Keep</h2>
-            <NoteAdd onAddNote={onAddNote} />
-            {selectedNote && (
-                <NoteEditor
-                    initialNote={selectedNote}
-                    onSave={onSaveEditedNote}
-                />
-            )
-            }
-            <NoteList
-                notes={notes}
-                onRemoveNote={onRemoveNote}
-                onEditNote={onEditNote}
-                onTogglePin={onTogglePin}
+        <section className="note-index main-layout">
+            <NoteHeader
+                isScrolled={isScrolled}
+                onToggleSidebar={onToggleSidebar}
             />
+
+            <section className="note-page full">
+                <aside className={`note-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+                    <button>💡</button>
+                </aside>
+
+                <main
+                    className="note-main"
+                    onScroll={(ev) =>
+                        setIsScrolled(ev.currentTarget.scrollTop > 0)
+                    }
+                >
+                    <section className="note-content">
+                        <NoteAdd onAddNote={onAddNote} />
+
+                        {selectedNote && (
+                            <NoteEditor
+                                initialNote={selectedNote}
+                                onSave={onSaveEditedNote}
+                            />
+                        )}
+
+                        <NoteList
+                            notes={notes}
+                            onRemoveNote={onRemoveNote}
+                            onEditNote={onEditNote}
+                            onTogglePin={onTogglePin}
+                        />
+                    </section>
+                </main>
+            </section>
         </section>
     )
 }
