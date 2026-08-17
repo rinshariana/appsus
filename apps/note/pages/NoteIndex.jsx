@@ -2,6 +2,7 @@ import { noteService } from '../services/note.service.js'
 import { NoteList } from '../cmps/NoteList.jsx'
 import { NoteAdd } from '../cmps/NoteAdd.jsx'
 import { NoteEditor } from '../cmps/NoteEditor.jsx'
+import { showErrorMsg, showSuccessMsg } from '../../../services/event-bus.service.js'
 
 const { useState, useEffect } = React
 
@@ -22,7 +23,9 @@ export function NoteIndex() {
         return noteService.save(note)
             .then(savedNote => {
                 setNotes(prevNotes => [savedNote, ...prevNotes])
+                showSuccessMsg('Note added')
             })
+            .catch(err => showErrorMsg('Cannot add note'))
     }
 
     function onRemoveNote(noteId) {
@@ -31,7 +34,9 @@ export function NoteIndex() {
                 setNotes(prevNotes =>
                     prevNotes.filter(note => note.id !== noteId)
                 )
+                showSuccessMsg(`note ${noteId} removed`)
             })
+            .catch(err => showErrorMsg(`Could not remove ${noteId}`))
     }
 
     function onEditNote(note) {
@@ -40,8 +45,12 @@ export function NoteIndex() {
 
     function onSaveEditedNote(note) {
         return noteService.save(note)
+            .then(() => {
+                showSuccessMsg(`note ${note.id} saved`)
+                setSelectedNote(null)
+            })
             .then(() => loadNotes())
-            .then(() => setSelectedNote(null))
+            .catch(err => showErrorMsg(`Could not save ${note.id}`))
     }
 
     function onTogglePin(note) {
@@ -49,11 +58,13 @@ export function NoteIndex() {
             ...note,
             isPinned: !note.isPinned
         }
+        const actionTried = updatedNote.isPinned ? 'pin' : 'unpin'
 
         return noteService.save(updatedNote)
+            .then(() => showSuccessMsg(`note ${note.id} ${actionTried}ned`))
             .then(() => loadNotes())
+            .catch(err => showErrorMsg(`Could not ${actionTried} ${noteId}`))
     }
-
 
     if (!notes) return <div>Loading...</div>
 
