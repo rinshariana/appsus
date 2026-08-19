@@ -17,6 +17,11 @@ export function MailPreview({ mail, onDelete, onToggleStar }) {
     const formattedDate = formatMailDate(timestamp)
     const deleteLabel = mail.removedAt ? 'Delete forever' : 'Move to Trash'
     const pendingLabel = mail.removedAt ? 'Deleting message…' : 'Moving message to Trash…'
+    const isDraft = mail.from === loggedinUser.email && !mail.sentAt && !mail.removedAt
+    const mailHref = isDraft ? getDraftUrl(mail) : `/mail/${mail.id}`
+    const rowLabel = isDraft
+        ? `Edit draft: ${correspondent}, ${subject}, ${bodySnippet}, ${formattedDate}`
+        : `${mail.isRead ? '' : 'Unread: '}${correspondent}, ${subject}, ${bodySnippet}, ${formattedDate}`
 
     async function onRemoveMail() {
         if (isDeleting) return
@@ -39,9 +44,9 @@ export function MailPreview({ mail, onDelete, onToggleStar }) {
 
             <Link
                 className="mail-row-link"
-                to={`/mail/${mail.id}`}
+                to={mailHref}
                 data-mail-id={mail.id}
-                aria-label={`${mail.isRead ? '' : 'Unread: '}${correspondent}, ${subject}, ${bodySnippet}, ${formattedDate}`}
+                aria-label={rowLabel}
             >
                 <span className="mail-correspondent">{correspondent}</span>
 
@@ -76,6 +81,18 @@ export function MailPreview({ mail, onDelete, onToggleStar }) {
             </button>
         </li>
     )
+}
+
+function getDraftUrl(mail) {
+    const searchParams = new URLSearchParams()
+    searchParams.set('status', 'draft')
+    searchParams.set('compose', 'true')
+    searchParams.set('draftId', mail.id)
+    searchParams.set('to', mail.to || '')
+    searchParams.set('subject', mail.subject || '')
+    searchParams.set('body', mail.body || '')
+
+    return `/mail?${searchParams.toString()}`
 }
 
 function formatMailDate(timestamp) {

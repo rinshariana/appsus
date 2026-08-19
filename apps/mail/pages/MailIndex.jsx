@@ -1,5 +1,5 @@
 const { useEffect, useRef, useState } = React
-const { Outlet, useMatch, useNavigate } = ReactRouterDOM
+const { Outlet, useMatch, useNavigate, useSearchParams } = ReactRouterDOM
 
 import { showErrorMsg, showSuccessMsg } from '../../../services/event-bus.service.js'
 import { MailCompose } from '../cmps/MailCompose.jsx'
@@ -9,13 +9,18 @@ import { MailToolbar } from '../cmps/MailToolbar.jsx'
 import { mailService } from '../services/mail.service.js'
 
 export function MailIndex() {
+    const [searchParams] = useSearchParams()
+    const statusFromUrl = mailService.getDefaultFilter({
+        status: searchParams.get('status'),
+    }).status
     const [mails, setMails] = useState([])
-    const [filterBy, setFilterBy] = useState(mailService.getDefaultFilter)
+    const [filterBy, setFilterBy] = useState(() => {
+        return mailService.getDefaultFilter({ status: statusFromUrl })
+    })
     const [sortBy, setSortBy] = useState(mailService.getDefaultSort)
     const [unreadCount, setUnreadCount] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
     const [isFolderDrawerOpen, setIsFolderDrawerOpen] = useState(false)
-    const [isComposeOpen, setIsComposeOpen] = useState(false)
     const [refreshCount, setRefreshCount] = useState(0)
     const menuButtonRef = useRef(null)
     const drawerCloseButtonRef = useRef(null)
@@ -25,11 +30,19 @@ export function MailIndex() {
     const detailsReturnFocusIdRef = useRef(undefined)
     const navigate = useNavigate()
     const isDetailsOpen = Boolean(useMatch('/mail/:mailId'))
+    const isComposeOpen = searchParams.get('compose') === 'true'
     const isMobile = useIsMobile()
 
     useEffect(() => {
         return () => clearTimeout(drawerFocusTimeoutRef.current)
     }, [])
+
+    useEffect(() => {
+        setFilterBy(prevFilter => {
+            if (prevFilter.status === statusFromUrl) return prevFilter
+            return { ...prevFilter, status: statusFromUrl }
+        })
+    }, [statusFromUrl])
 
     useEffect(() => {
         let isActive = true
@@ -101,8 +114,9 @@ export function MailIndex() {
 
     function onSelectFolder(status) {
         setIsLoading(true)
-        setFilterBy(prevFilter => ({ ...prevFilter, status }))
-        navigate('/mail')
+        const nextSearchParams = new URLSearchParams(searchParams)
+        nextSearchParams.set('status', status)
+        navigate(getMailUrl(nextSearchParams))
         onCloseFolderDrawer()
     }
 
@@ -119,11 +133,19 @@ export function MailIndex() {
             ? menuButtonRef.current
             : document.activeElement
         setIsFolderDrawerOpen(false)
-        setIsComposeOpen(true)
+        const nextSearchParams = new URLSearchParams()
+        nextSearchParams.set('status', filterBy.status)
+        nextSearchParams.set('compose', 'true')
+        navigate(getMailUrl(nextSearchParams))
     }
 
     function onCloseCompose() {
-        setIsComposeOpen(false)
+        const nextSearchParams = new URLSearchParams(searchParams)
+        clearComposeParams(nextSearchParams)
+        if (!nextSearchParams.has('status')) {
+            nextSearchParams.set('status', filterBy.status)
+        }
+        navigate(getMailUrl(nextSearchParams), { replace: true })
         requestAnimationFrame(() => {
             if (composeOpenerRef.current) composeOpenerRef.current.focus()
         })
@@ -149,12 +171,44 @@ export function MailIndex() {
         }
     }
 
+    async function onSaveDraft(draft) {
+        const now = Date.now()
+        const loggedinUser = mailService.getLoggedinUser()
+        const storedDraft = await getStoredMail(draft.id)
+        const draftToSave = {
+            ...storedDraft,
+            ...draft,
+            id: storedDraft ? storedDraft.id : undefined,
+            createdAt: (storedDraft && storedDraft.createdAt) || draft.createdAt || now,
+            sentAt: null,
+            isRead: true,
+            removedAt: null,
+            from: loggedinUser.email,
+        }
+
+        try {
+            const savedDraft = await mailService.save(draftToSave)
+
+            if (filterBy.status === 'draft') {
+                setRefreshCount(currentCount => currentCount + 1)
+            }
+
+            return savedDraft
+        } catch (err) {
+            console.error('Failed to save draft:', err)
+            throw err
+        }
+    }
+
     async function onSendMail(draft) {
         const now = Date.now()
         const loggedinUser = mailService.getLoggedinUser()
+        const storedDraft = await getStoredMail(draft.id)
         const mailToSend = {
+            ...storedDraft,
             ...draft,
-            createdAt: now,
+            id: storedDraft ? storedDraft.id : undefined,
+            createdAt: (storedDraft && storedDraft.createdAt) || draft.createdAt || now,
             sentAt: now,
             isRead: true,
             removedAt: null,
@@ -165,7 +219,7 @@ export function MailIndex() {
         try {
             const savedMail = await mailService.save(mailToSend)
 
-            if (filterBy.status === 'sent') {
+            if (filterBy.status === 'sent' || filterBy.status === 'draft') {
                 setRefreshCount(currentCount => currentCount + 1)
             }
 
@@ -247,7 +301,9 @@ export function MailIndex() {
     function onCloseDetails(mailId = null) {
         detailsReturnFocusIdRef.current = mailId
         setIsLoading(true)
-        navigate('/mail')
+        const nextSearchParams = new URLSearchParams()
+        nextSearchParams.set('status', filterBy.status)
+        navigate(getMailUrl(nextSearchParams))
         setRefreshCount(currentCount => currentCount + 1)
     }
 
@@ -261,7 +317,9 @@ export function MailIndex() {
         }
     }
 
-    const folderTitle = filterBy.status.charAt(0).toUpperCase() + filterBy.status.slice(1)
+    const folderTitle = filterBy.status === 'draft'
+        ? 'Drafts'
+        : filterBy.status.charAt(0).toUpperCase() + filterBy.status.slice(1)
 
     return (
         <section className="mail-index">
@@ -316,11 +374,33 @@ export function MailIndex() {
             {isComposeOpen && (
                 <MailCompose
                     onSend={onSendMail}
+                    onSaveDraft={onSaveDraft}
                     onClose={onCloseCompose}
                 />
             )}
         </section>
     )
+}
+
+async function getStoredMail(mailId) {
+    if (!mailId) return null
+
+    try {
+        return await mailService.get(mailId)
+    } catch (err) {
+        return null
+    }
+}
+
+function clearComposeParams(searchParams) {
+    ['compose', 'draftId', 'to', 'subject', 'body'].forEach(paramName => {
+        searchParams.delete(paramName)
+    })
+}
+
+function getMailUrl(searchParams) {
+    const queryString = searchParams.toString()
+    return queryString ? `/mail?${queryString}` : '/mail'
 }
 
 function useIsMobile() {

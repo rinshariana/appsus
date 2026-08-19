@@ -1,19 +1,45 @@
 const { useEffect, useRef, useState } = React
+const { useSearchParams } = ReactRouterDOM
 
 import { mailService } from '../services/mail.service.js'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const AUTOSAVE_INTERVAL = 5000
 
-export function MailCompose({ onSend, onClose }) {
-    const [mail, setMail] = useState(() => mailService.getEmptyMail())
+export function MailCompose({ onSend, onSaveDraft, onClose }) {
+    const [searchParams, setSearchParams] = useSearchParams()
     const [recipientError, setRecipientError] = useState('')
     const [submitError, setSubmitError] = useState('')
+    const [draftError, setDraftError] = useState('')
     const [isSending, setIsSending] = useState(false)
+    const [isFinalizing, setIsFinalizing] = useState(false)
     const [isMobile, setIsMobile] = useState(() => {
         return window.matchMedia('(max-width: 719px)').matches
     })
     const dialogRef = useRef(null)
+    const searchParamsRef = useRef(searchParams)
+    const onSaveDraftRef = useRef(onSaveDraft)
+    const savePromiseRef = useRef(null)
+    const isMountedRef = useRef(true)
+    const isSendingRef = useRef(false)
+    const isFinalizingRef = useRef(false)
+    const requestCloseRef = useRef(null)
+    const initialMailRef = useRef(getMailFromSearchParams(searchParams))
+    const isDirtyRef = useRef(
+        !initialMailRef.current.id && hasDraftContent(initialMailRef.current)
+    )
     const loggedinUser = mailService.getLoggedinUser()
+    const mail = getMailFromSearchParams(searchParams)
+    const isBusy = isSending || isFinalizing
+
+    searchParamsRef.current = searchParams
+    onSaveDraftRef.current = onSaveDraft
+
+    useEffect(() => {
+        return () => {
+            isMountedRef.current = false
+        }
+    }, [])
 
     useEffect(() => {
         const mediaQuery = window.matchMedia('(max-width: 719px)')
@@ -21,6 +47,15 @@ export function MailCompose({ onSend, onClose }) {
 
         mediaQuery.addEventListener('change', onChange)
         return () => mediaQuery.removeEventListener('change', onChange)
+    }, [])
+
+    useEffect(() => {
+        const intervalId = window.setInterval(() => {
+            if (isSendingRef.current) return
+            persistDirtyDraft().catch(() => {})
+        }, AUTOSAVE_INTERVAL)
+
+        return () => window.clearInterval(intervalId)
     }, [])
 
     useEffect(() => {
@@ -37,8 +72,8 @@ export function MailCompose({ onSend, onClose }) {
         })
 
         function onKeyDown(ev) {
-            if (ev.key === 'Escape' && !isSending) {
-                onClose()
+            if (ev.key === 'Escape' && !isSendingRef.current) {
+                requestCloseRef.current()
                 return
             }
 
@@ -70,37 +105,115 @@ export function MailCompose({ onSend, onClose }) {
                 element.inert = false
             })
         }
-    }, [isMobile, isSending, onClose])
+    }, [isMobile])
 
     function onChange({ target }) {
         const { name, value } = target
+        const nextSearchParams = new URLSearchParams(searchParamsRef.current)
 
-        setMail(prevMail => ({ ...prevMail, [name]: value }))
+        nextSearchParams.set(name, value)
+        updateSearchParams(nextSearchParams)
+        isDirtyRef.current = true
         if (name === 'to') setRecipientError('')
         setSubmitError('')
     }
 
     async function onSubmit(ev) {
         ev.preventDefault()
-        if (isSending) return
+        if (isSendingRef.current || isFinalizingRef.current) return
 
-        const recipient = mail.to.trim()
+        const currentMail = getMailFromSearchParams(searchParamsRef.current)
+        const recipient = currentMail.to.trim()
         if (!EMAIL_PATTERN.test(recipient)) {
             setRecipientError('Enter a valid email address.')
             return
         }
 
+        isSendingRef.current = true
         setIsSending(true)
         setRecipientError('')
         setSubmitError('')
 
         try {
-            await onSend({ ...mail, to: recipient })
+            await persistDirtyDraft({ force: true })
+            const mailToSend = getMailFromSearchParams(searchParamsRef.current)
+            await onSend({ ...mailToSend, to: recipient })
             onClose()
         } catch (err) {
+            if (!isMountedRef.current) return
             setSubmitError('Your message was not sent. Please try again.')
+            isSendingRef.current = false
             setIsSending(false)
         }
+    }
+
+    async function requestClose() {
+        if (isSendingRef.current || isFinalizingRef.current) return
+
+        isFinalizingRef.current = true
+        setIsFinalizing(true)
+        try {
+            await persistDirtyDraft({ force: true })
+            onClose()
+        } catch (err) {
+            isFinalizingRef.current = false
+            if (isMountedRef.current) setIsFinalizing(false)
+        }
+    }
+
+    requestCloseRef.current = requestClose
+
+    async function persistDirtyDraft({ force = false } = {}) {
+        if (savePromiseRef.current) {
+            try {
+                await savePromiseRef.current
+            } catch (err) {
+                // The failed save marks the draft dirty for a retry below.
+            }
+
+            if (force && isDirtyRef.current) {
+                return persistDirtyDraft({ force: true })
+            }
+            return null
+        }
+
+        if (!isDirtyRef.current) return null
+
+        const draft = getMailFromSearchParams(searchParamsRef.current)
+        if (!draft.id && !hasDraftContent(draft)) {
+            isDirtyRef.current = false
+            if (isMountedRef.current) setDraftError('')
+            return null
+        }
+
+        isDirtyRef.current = false
+        const savePromise = onSaveDraftRef.current(draft)
+        savePromiseRef.current = savePromise
+
+        try {
+            const savedDraft = await savePromise
+            const nextSearchParams = new URLSearchParams(searchParamsRef.current)
+
+            nextSearchParams.set('draftId', savedDraft.id)
+            updateSearchParams(nextSearchParams)
+            if (isMountedRef.current) setDraftError('')
+            return savedDraft
+        } catch (err) {
+            isDirtyRef.current = true
+            if (isMountedRef.current) {
+                setDraftError('Could not save draft. Retrying automatically…')
+            }
+            throw err
+        } finally {
+            if (savePromiseRef.current === savePromise) {
+                savePromiseRef.current = null
+            }
+        }
+    }
+
+    function updateSearchParams(nextSearchParams) {
+        searchParamsRef.current = nextSearchParams
+        setSearchParams(nextSearchParams, { replace: true })
     }
 
     return (
@@ -112,13 +225,13 @@ export function MailCompose({ onSend, onClose }) {
             aria-labelledby="mail-compose-title"
         >
             <header className="mail-compose-header">
-                <h2 id="mail-compose-title">New Message</h2>
+                <h2 id="mail-compose-title">{mail.id ? 'Draft' : 'New Message'}</h2>
                 <button
                     type="button"
                     aria-label="Close compose"
                     title="Close compose"
-                    disabled={isSending}
-                    onClick={onClose}
+                    disabled={isBusy}
+                    onClick={requestClose}
                 >
                     <i className="fa-solid fa-xmark" aria-hidden="true" />
                 </button>
@@ -143,7 +256,7 @@ export function MailCompose({ onSend, onClose }) {
                         value={mail.to}
                         autoFocus
                         required
-                        disabled={isSending}
+                        disabled={isBusy}
                         aria-invalid={Boolean(recipientError)}
                         aria-describedby={recipientError ? 'mail-recipient-error' : undefined}
                         onChange={onChange}
@@ -162,7 +275,7 @@ export function MailCompose({ onSend, onClose }) {
                         name="subject"
                         value={mail.subject}
                         placeholder="Subject"
-                        disabled={isSending}
+                        disabled={isBusy}
                         onChange={onChange}
                     />
                 </label>
@@ -173,10 +286,16 @@ export function MailCompose({ onSend, onClose }) {
                         name="body"
                         value={mail.body}
                         placeholder="Write a message"
-                        disabled={isSending}
+                        disabled={isBusy}
                         onChange={onChange}
                     />
                 </label>
+
+                {draftError && (
+                    <p className="mail-compose-error mail-compose-submit-error" role="alert">
+                        {draftError}
+                    </p>
+                )}
 
                 {submitError && (
                     <p className="mail-compose-error mail-compose-submit-error" role="alert">
@@ -185,12 +304,39 @@ export function MailCompose({ onSend, onClose }) {
                 )}
 
                 <footer className="mail-compose-footer">
-                    <button className="mail-send-btn" type="submit" disabled={isSending}>
+                    <button className="mail-send-btn" type="submit" disabled={isBusy}>
                         {isSending && <i className="fa-solid fa-spinner fa-spin" aria-hidden="true" />}
                         <span>{isSending ? 'Sending…' : 'Send'}</span>
+                    </button>
+
+                    <button
+                        className="mail-note-btn"
+                        type="button"
+                        aria-label="Save as note — coming soon"
+                        title="Save as note — coming soon"
+                        disabled
+                    >
+                        <i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
                     </button>
                 </footer>
             </form>
         </section>
     )
+}
+
+function getMailFromSearchParams(searchParams) {
+    const emptyMail = mailService.getEmptyMail()
+    const draftId = searchParams.get('draftId')
+
+    return {
+        ...emptyMail,
+        id: draftId || undefined,
+        to: searchParams.get('to') || '',
+        subject: searchParams.get('subject') || '',
+        body: searchParams.get('body') || '',
+    }
+}
+
+function hasDraftContent(mail) {
+    return [mail.to, mail.subject, mail.body].some(value => value.trim())
 }
