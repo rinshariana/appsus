@@ -4,6 +4,7 @@ const { Outlet, useMatch, useNavigate, useSearchParams } = ReactRouterDOM
 import { showErrorMsg, showSuccessMsg } from '../../../services/event-bus.service.js'
 import { MailCompose } from '../cmps/MailCompose.jsx'
 import { MailFolderList } from '../cmps/MailFolderList.jsx'
+import { MailHeader } from '../cmps/MailHeader.jsx'
 import { MailList } from '../cmps/MailList.jsx'
 import { MailToolbar } from '../cmps/MailToolbar.jsx'
 import { mailService } from '../services/mail.service.js'
@@ -21,6 +22,7 @@ export function MailIndex() {
     const [unreadCount, setUnreadCount] = useState(0)
     const [isLoading, setIsLoading] = useState(true)
     const [isFolderDrawerOpen, setIsFolderDrawerOpen] = useState(false)
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
     const [refreshCount, setRefreshCount] = useState(0)
     const menuButtonRef = useRef(null)
     const drawerCloseButtonRef = useRef(null)
@@ -159,6 +161,11 @@ export function MailIndex() {
                 document.querySelector('.mail-drawer-close')
             if (closeButton) closeButton.focus()
         }, 200)
+    }
+
+    function onToggleNavigation() {
+        if (isMobile) onOpenFolderDrawer()
+        else setIsSidebarCollapsed(isCollapsed => !isCollapsed)
     }
 
     function onCloseFolderDrawer() {
@@ -322,54 +329,64 @@ export function MailIndex() {
         : filterBy.status.charAt(0).toUpperCase() + filterBy.status.slice(1)
 
     return (
-        <section className="mail-index">
-            <MailFolderList
-                status={filterBy.status}
-                unreadCount={unreadCount}
-                isOpen={isFolderDrawerOpen}
-                onSelectFolder={onSelectFolder}
-                onClose={onCloseFolderDrawer}
-                onCompose={onOpenCompose}
-                composeButtonRef={composeButtonRef}
-                closeButtonRef={drawerCloseButtonRef}
+        <section className={`mail-index ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+            <MailHeader
+                filterBy={filterBy}
+                onSetFilter={onSetFilter}
+                isSidebarCollapsed={isSidebarCollapsed}
+                isFolderDrawerOpen={isFolderDrawerOpen}
                 isMobile={isMobile}
+                onToggleNavigation={onToggleNavigation}
+                menuButtonRef={menuButtonRef}
             />
 
-            <main className={`mail-main ${isDetailsOpen ? 'details-open' : ''}`}>
-                {!isDetailsOpen && (
-                    <MailToolbar
-                        folderTitle={folderTitle}
-                        messageCount={mails.length}
-                        isLoading={isLoading}
-                        isMenuOpen={isFolderDrawerOpen}
-                        filterBy={filterBy}
-                        sortBy={sortBy}
-                        onOpenMenu={onOpenFolderDrawer}
-                        onSetFilter={onSetFilter}
-                        onSetSort={onSetSort}
-                        menuButtonRef={menuButtonRef}
-                    />
-                )}
+            <section className="mail-workspace">
+                <MailFolderList
+                    status={filterBy.status}
+                    unreadCount={unreadCount}
+                    isOpen={isFolderDrawerOpen}
+                    isCollapsed={!isMobile && isSidebarCollapsed}
+                    onSelectFolder={onSelectFolder}
+                    onClose={onCloseFolderDrawer}
+                    onCompose={onOpenCompose}
+                    composeButtonRef={composeButtonRef}
+                    closeButtonRef={drawerCloseButtonRef}
+                    isMobile={isMobile}
+                />
 
-                <section className="mail-content">
-                    {isDetailsOpen
-                        ? <Outlet context={{
-                            mails,
-                            onMarkAsRead,
-                            onDeleteMail,
-                            onToggleStar,
-                            onCloseDetails,
-                        }} />
-                        : <MailList
-                            mails={mails}
+                <main className={`mail-main ${isDetailsOpen ? 'details-open' : ''}`}>
+                    {!isDetailsOpen && (
+                        <MailToolbar
+                            folderTitle={folderTitle}
+                            messageCount={mails.length}
                             isLoading={isLoading}
-                            hasActiveFilters={Boolean(filterBy.txt.trim()) || filterBy.isRead !== null}
-                            onDeleteMail={onDeleteMail}
-                            onToggleStar={onToggleStar}
+                            filterBy={filterBy}
+                            sortBy={sortBy}
+                            onSetFilter={onSetFilter}
+                            onSetSort={onSetSort}
                         />
-                    }
-                </section>
-            </main>
+                    )}
+
+                    <section className="mail-content">
+                        {isDetailsOpen
+                            ? <Outlet context={{
+                                mails,
+                                onMarkAsRead,
+                                onDeleteMail,
+                                onToggleStar,
+                                onCloseDetails,
+                            }} />
+                            : <MailList
+                                mails={mails}
+                                isLoading={isLoading}
+                                hasActiveFilters={Boolean(filterBy.txt.trim()) || filterBy.isRead !== null}
+                                onDeleteMail={onDeleteMail}
+                                onToggleStar={onToggleStar}
+                            />
+                        }
+                    </section>
+                </main>
+            </section>
 
             {isComposeOpen && (
                 <MailCompose

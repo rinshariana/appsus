@@ -1,35 +1,24 @@
 .mail-filter {
     display: flex;
-    min-width: 0;
-    flex: 1 1 420px;
     align-items: center;
-    gap: .5rem;
 }
 
-.mail-search-field,
 .mail-read-filter {
     position: relative;
     display: flex;
     align-items: center;
-    height: 40px;
-    border-radius: 8px;
+    height: 36px;
+    border: 1px solid var(--mail-clr-border);
+    border-radius: 18px;
     color: var(--mail-clr-text-muted);
-    background: var(--mail-clr-page);
+    background: var(--mail-clr-surface);
 }
 
-.mail-search-field {
-    min-width: 140px;
-    flex: 1 1 300px;
-    padding-inline-start: .875rem;
-}
-
-.mail-search-field:focus-within,
 .mail-read-filter:focus-within {
     background: var(--mail-clr-surface);
     box-shadow: inset 0 0 0 2px var(--mail-clr-accent);
 }
 
-.mail-search-field input,
 .mail-read-filter select {
     min-width: 0;
     height: 100%;
@@ -40,53 +29,20 @@
     font: inherit;
 }
 
-.mail-search-field input {
-    width: 100%;
-    padding: 0 .5rem;
-}
-
-.mail-search-field input::-webkit-search-cancel-button {
-    display: none;
-}
-
-.mail-search-field button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    margin-inline-end: .125rem;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    color: var(--mail-clr-text-muted);
-    background: transparent;
-    cursor: pointer;
-}
-
-.mail-search-field button:hover {
-    background: var(--mail-clr-row-action-hover);
-}
-
-.mail-search-field button:focus-visible {
-    outline: 2px solid var(--mail-clr-accent);
-    outline-offset: -2px;
-}
-
 .mail-read-filter {
     flex: 0 0 auto;
 }
 
 .mail-read-filter select {
-    width: 104px;
-    padding: 0 2rem 0 .75rem;
+    width: 100px;
+    padding: 0 1.75rem 0 .75rem;
     appearance: none;
     cursor: pointer;
 }
 
 .mail-read-filter i {
     position: absolute;
-    inset-inline-end: .75rem;
+    inset-inline-end: .65rem;
     font-size: .7rem;
     pointer-events: none;
 }

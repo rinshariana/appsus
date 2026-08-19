@@ -9,9 +9,9 @@
     position: relative;
     display: flex;
     align-items: center;
-    height: 40px;
+    height: 36px;
     border: 1px solid var(--mail-clr-border);
-    border-radius: 8px;
+    border-radius: 18px;
     color: var(--mail-clr-text-muted);
 }
 
@@ -21,7 +21,7 @@
 }
 
 .mail-sort select {
-    width: 92px;
+    width: 88px;
     height: 100%;
     padding: 0 1.75rem 0 .75rem;
     border: 0;
@@ -45,11 +45,11 @@
     align-items: center;
     justify-content: center;
     gap: .4rem;
-    min-width: 116px;
-    height: 40px;
+    min-width: 112px;
+    height: 36px;
     padding: 0 .75rem;
     border: 1px solid var(--mail-clr-border);
-    border-radius: 8px;
+    border-radius: 18px;
     color: var(--mail-clr-text-secondary);
     background: var(--mail-clr-surface);
     font: inherit;

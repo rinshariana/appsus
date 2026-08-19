@@ -28,7 +28,6 @@ export function MailCompose({ onSend, onSaveDraft, onClose }) {
     const isDirtyRef = useRef(
         !initialMailRef.current.id && hasDraftContent(initialMailRef.current)
     )
-    const loggedinUser = mailService.getLoggedinUser()
     const mail = getMailFromSearchParams(searchParams)
     const isBusy = isSending || isFinalizing
 
@@ -238,16 +237,6 @@ export function MailCompose({ onSend, onSaveDraft, onClose }) {
             </header>
 
             <form className="mail-compose-form" noValidate onSubmit={onSubmit}>
-                <label className="mail-compose-field mail-compose-from">
-                    <span>From</span>
-                    <input
-                        type="email"
-                        value={loggedinUser.email}
-                        readOnly
-                        aria-readonly="true"
-                    />
-                </label>
-
                 <label className={`mail-compose-field ${recipientError ? 'invalid' : ''}`}>
                     <span>To</span>
                     <input
@@ -309,15 +298,6 @@ export function MailCompose({ onSend, onSaveDraft, onClose }) {
                         <span>{isSending ? 'Sending…' : 'Send'}</span>
                     </button>
 
-                    <button
-                        className="mail-note-btn"
-                        type="button"
-                        aria-label="Save as note — coming soon"
-                        title="Save as note — coming soon"
-                        disabled
-                    >
-                        <i className="fa-solid fa-arrow-up-from-bracket" aria-hidden="true" />
-                    </button>
                 </footer>
             </form>
         </section>

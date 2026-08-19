@@ -10,6 +10,7 @@ export function MailFolderList({
     status,
     unreadCount,
     isOpen,
+    isCollapsed,
     onSelectFolder,
     onClose,
     onCompose,
@@ -29,7 +30,7 @@ export function MailFolderList({
 
             <aside
                 id="mail-folder-drawer"
-                className={`mail-folder-list ${isOpen ? 'open' : ''}`}
+                className={`mail-folder-list ${isOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}
                 role={isMobile ? 'dialog' : undefined}
                 aria-label={isMobile ? 'Mail folders' : undefined}
                 aria-modal={isMobile ? 'true' : undefined}
@@ -50,6 +51,8 @@ export function MailFolderList({
                     ref={composeButtonRef}
                     className="mail-compose-btn"
                     type="button"
+                    aria-label="Compose"
+                    title={isCollapsed ? 'Compose' : undefined}
                     onClick={onCompose}
                 >
                     <i className="fa-solid fa-plus" aria-hidden="true" />
@@ -66,6 +69,11 @@ export function MailFolderList({
                                 type="button"
                                 key={folder.status}
                                 aria-current={isActive ? 'page' : undefined}
+                                aria-label={folder.status === 'inbox' && unreadCount > 0
+                                    ? `${folder.label}, ${unreadCount} unread`
+                                    : folder.label
+                                }
+                                title={isCollapsed ? folder.label : undefined}
                                 onClick={() => onSelectFolder(folder.status)}
                             >
                                 <span className="mail-folder-label">

@@ -14,31 +14,7 @@ export function MailFilter({ filterBy, onSetFilter }) {
     }
 
     return (
-        <section className="mail-filter" role="search">
-            <div className="mail-search-field">
-                <label className="mail-visually-hidden" htmlFor="mail-search-input">
-                    Search mail
-                </label>
-                <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
-                <input
-                    id="mail-search-input"
-                    type="search"
-                    value={filterBy.txt}
-                    placeholder="Search mail"
-                    onChange={({ target }) => onSetFilter({ txt: target.value })}
-                />
-                {filterBy.txt && (
-                    <button
-                        type="button"
-                        aria-label="Clear search"
-                        title="Clear search"
-                        onClick={() => onSetFilter({ txt: '' })}
-                    >
-                        <i className="fa-solid fa-xmark" aria-hidden="true" />
-                    </button>
-                )}
-            </div>
-
+        <section className="mail-filter" aria-label="Filter mail">
             <label className="mail-read-filter">
                 <span className="mail-visually-hidden">Filter by read state</span>
                 <select value={readState} onChange={onChangeReadState}>

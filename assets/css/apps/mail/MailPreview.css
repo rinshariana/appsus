@@ -1,7 +1,7 @@
 .mail-row {
     position: relative;
     min-width: 0;
-    border-bottom: 1px solid var(--mail-clr-border);
+    border-bottom: 1px solid #e5e9ef;
     background: var(--mail-clr-row-read);
 }
 
@@ -17,18 +17,19 @@
 
 .mail-row-link {
     display: grid;
-    grid-template-columns: minmax(140px, 200px) minmax(0, 1fr) auto;
+    grid-template-columns: minmax(140px, 220px) minmax(0, 1fr) auto;
     align-items: center;
-    gap: 1rem;
+    gap: .75rem;
     min-width: 0;
     min-height: var(--mail-row-height);
-    padding: .625rem 1.25rem .625rem 3.25rem;
+    padding: .35rem 1rem .35rem 3.25rem;
+    font-size: .875rem;
 }
 
 .mail-row-star {
     position: absolute;
     inset-block-start: 50%;
-    inset-inline-start: .5rem;
+    inset-inline-start: .55rem;
     z-index: 3;
     transform: translateY(-50%);
 }
@@ -60,7 +61,7 @@
 
 .mail-subject {
     flex: 0 1 auto;
-    max-width: 55%;
+    max-width: 58%;
     color: var(--mail-clr-text-primary);
 }
 
@@ -97,7 +98,7 @@
 .mail-row-delete {
     position: absolute;
     inset-block-start: 50%;
-    inset-inline-end: .75rem;
+    inset-inline-end: .5rem;
     z-index: 3;
     display: inline-flex;
     align-items: center;
