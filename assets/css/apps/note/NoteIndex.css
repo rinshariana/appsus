@@ -1,3 +1,32 @@
  .note-index {
+    height: calc(100vh - var(--app-header-height));
+    overflow: hidden;
+
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ }
+
+ .note-page {
+    display: grid;
+    grid-template-columns: auto 1fr;
+
+    height: calc(100% - var(--note-header-height));
+    min-height: 0;
+ }
+
+ .note-sidebar {
+    width: 72px;
+ }
+
+ .note-sidebar.open {
+    width: 240px;
+ }
+
+ .note-main {
+    min-width: 0;
+    overflow-y: auto;
+ }
+
+ .note-content {
+    width: min(100% - 2rem, 1200px);
+    margin-inline: auto;
  }

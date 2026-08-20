@@ -1,8 +1,13 @@
 .app-header {
+        height: var(--app-header-height);
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 1em;
     background: lightblue;
+
+    position: relative;
+    z-index: 20;
 }
 
 .app-header nav a {
