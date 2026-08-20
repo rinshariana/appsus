@@ -1,0 +1,48 @@
+.mail-filter {
+    display: flex;
+    align-items: center;
+}
+
+.mail-read-filter {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 36px;
+    border: 1px solid var(--mail-clr-border);
+    border-radius: 18px;
+    color: var(--mail-clr-text-muted);
+    background: var(--mail-clr-surface);
+}
+
+.mail-read-filter:focus-within {
+    background: var(--mail-clr-surface);
+    box-shadow: inset 0 0 0 2px var(--mail-clr-accent);
+}
+
+.mail-read-filter select {
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: 0;
+    color: var(--mail-clr-text-primary);
+    background: transparent;
+    font: inherit;
+}
+
+.mail-read-filter {
+    flex: 0 0 auto;
+}
+
+.mail-read-filter select {
+    width: 100px;
+    padding: 0 1.75rem 0 .75rem;
+    appearance: none;
+    cursor: pointer;
+}
+
+.mail-read-filter i {
+    position: absolute;
+    inset-inline-end: .65rem;
+    font-size: .7rem;
+    pointer-events: none;
+}

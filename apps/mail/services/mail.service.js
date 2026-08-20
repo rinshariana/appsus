@@ -2,7 +2,7 @@ import { storageService } from '../../../services/async-storage.service.js'
 import { utilService } from '../../../services/util.service.js'
 
 const MAIL_KEY = 'mailDB'
-const MAIL_STATUSES = ['inbox', 'sent', 'trash', 'draft']
+const MAIL_STATUSES = ['inbox', 'starred', 'sent', 'trash', 'draft']
 
 const loggedinUser = {
     email: 'user@appsus.com',
@@ -15,6 +15,7 @@ export const mailService = {
     query,
     get,
     save,
+    toggleStar,
     moveToTrash,
     remove,
     getUnreadCount,
@@ -32,6 +33,7 @@ function query(filterBy = {}, sortBy = {}) {
 
     return storageService.query(MAIL_KEY)
         .then(mails => {
+            mails = mails.map(_normalizeMail)
             const filteredMails = mails.filter(mail => {
                 return _isInFolder(mail, filterBy.status) &&
                     _matchesText(mail, filterBy.txt) &&
@@ -46,13 +48,19 @@ function query(filterBy = {}, sortBy = {}) {
 
 function get(mailId) {
     return storageService.get(MAIL_KEY, mailId)
+        .then(_normalizeMail)
 }
 
 function save(mail) {
-    const mailToSave = { ...mail }
+    const mailToSave = _normalizeMail(mail)
 
     if (mailToSave.id) return storageService.put(MAIL_KEY, mailToSave)
     return storageService.post(MAIL_KEY, mailToSave)
+}
+
+function toggleStar(mailId) {
+    return get(mailId)
+        .then(mail => save({ ...mail, isStarred: !mail.isStarred }))
 }
 
 function moveToTrash(mailId) {
@@ -110,6 +118,7 @@ function getLoggedinUser() {
 function _isInFolder(mail, status) {
     if (status === 'trash') return Boolean(mail.removedAt)
     if (mail.removedAt) return false
+    if (status === 'starred') return mail.isStarred
 
     if (status === 'sent') {
         return mail.from === loggedinUser.email && Boolean(mail.sentAt)
@@ -168,6 +177,7 @@ function _createMails() {
             subject: 'Welcome to Appsus',
             body: 'Your Appsus workspace is ready. Start exploring your mail and notes.',
             isRead: false,
+            isStarred: true,
             from: 'team@appsus.com',
         }),
         _createMail({
@@ -222,6 +232,7 @@ function _createMails() {
             subject: 'Project files',
             body: 'I attached the updated project notes and the latest feature checklist.',
             isRead: true,
+            isStarred: true,
             from: loggedinUser.email,
             to: 'alex@example.com',
         }),
@@ -288,10 +299,18 @@ function _createMail(overrides = {}) {
         subject: '',
         body: '',
         isRead: false,
+        isStarred: false,
         sentAt: Date.now(),
         removedAt: null,
         from: 'friend@example.com',
         to: loggedinUser.email,
         ...overrides,
+    }
+}
+
+function _normalizeMail(mail) {
+    return {
+        ...mail,
+        isStarred: Boolean(mail.isStarred),
     }
 }

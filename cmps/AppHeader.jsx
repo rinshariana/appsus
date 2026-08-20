@@ -1,6 +1,9 @@
-const { Link, NavLink } = ReactRouterDOM
+const { Link, NavLink, useLocation } = ReactRouterDOM
 
 export function AppHeader() {
+    const { pathname } = useLocation()
+
+    if (pathname === '/mail' || pathname.startsWith('/mail/')) return null
 
     return <header className="app-header">
         <Link to="/">

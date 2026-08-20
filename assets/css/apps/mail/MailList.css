@@ -5,6 +5,7 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     list-style: none;
+    background: var(--mail-clr-surface);
 }
 
 .mail-list-status {
@@ -40,7 +41,7 @@
     align-items: center;
     gap: 1rem;
     min-height: var(--mail-row-height);
-    padding: .625rem 1.25rem;
+    padding: .35rem 1rem;
     border-bottom: 1px solid var(--mail-clr-border);
 }
 

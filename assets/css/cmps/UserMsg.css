@@ -1,9 +1,17 @@
 .user-msg {
     position: fixed;
+    z-index: 1200;
     bottom: -100px;
-    right: .5em;
-    padding: .5em;
+    right: .8em;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: min(320px, calc(100vw - 1.6rem));
+    padding: .75rem 1rem;
+    border-radius: 4px;
+    color: #fff;
     background-color: #111;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 30%);
 }
 
 .user-msg.open {
@@ -19,7 +27,33 @@
     background-color: var(--color3);
 }
 
-.user-msg button{
-   float: right;
-   margin-inline-start: 4px;
+.user-msg button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin-inline-start: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: inherit;
+    background: transparent;
+    font-size: 1.25rem;
+    cursor: pointer;
+}
+
+.user-msg button:hover {
+    background: rgb(255 255 255 / 15%);
+}
+
+.user-msg button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .user-msg.open {
+        transition: none;
+    }
 }

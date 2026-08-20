@@ -6,10 +6,10 @@
     --mail-clr-text-primary: #202124;
     --mail-clr-text-secondary: #3c4043;
     --mail-clr-text-muted: #5f6368;
-    --mail-clr-border: #e0e3e7;
+    --mail-clr-border: #e2e7ef;
     --mail-clr-accent: #0b57d0;
     --mail-clr-compose: #c2e7ff;
-    --mail-clr-compose-text: #44546f;
+    --mail-clr-compose-text: #001d35;
     --mail-clr-folder-active: #d3e3fd;
     --mail-clr-folder-active-text: #001d35;
     --mail-clr-on-accent: #fff;
@@ -20,15 +20,21 @@
     --mail-clr-folder-hover: #e9eef6;
     --mail-clr-loading: #e7e9ec;
     --mail-clr-loading-highlight: #f5f6f7;
+    --mail-clr-compose-header: #f2f6fc;
+    --mail-clr-compose-error: #b3261e;
+    --mail-clr-star: #f4b400;
 
-    --mail-sidebar-width: 220px;
-    --mail-toolbar-height: 64px;
-    --mail-row-height: 40px;
+    --mail-sidebar-width: 256px;
+    --mail-sidebar-collapsed-width: 72px;
+    --mail-header-height: 64px;
+    --mail-toolbar-height: 52px;
+    --mail-row-height: 44px;
     --mail-touch-target: 44px;
     --mail-shell-radius: 16px;
     --mail-folder-radius: 22px;
     --mail-drawer-shadow: 4px 0 16px rgb(0 0 0 / 20%);
     --mail-row-hover-shadow: 0 1px 2px rgb(60 64 67 / 30%),
         0 1px 3px 1px rgb(60 64 67 / 15%);
+    --mail-compose-shadow: 0 8px 28px rgb(60 64 67 / 32%);
     --mail-transition-duration: 180ms;
 }

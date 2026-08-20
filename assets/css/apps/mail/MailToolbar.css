@@ -1,49 +1,43 @@
 .mail-toolbar {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(120px, 1fr) auto;
     align-items: center;
-    gap: 1rem;
+    gap: .75rem;
     min-height: var(--mail-toolbar-height);
-    padding: 0 1.5rem;
+    padding: .375rem 1rem;
     border-bottom: 1px solid var(--mail-clr-border);
     background: var(--mail-clr-surface);
 }
 
+.mail-toolbar-heading {
+    display: flex;
+    min-width: 0;
+    align-items: baseline;
+    gap: .75rem;
+}
+
 .mail-toolbar h1 {
     overflow: hidden;
-    font-size: 1.35rem;
+    font-size: 1rem;
     font-weight: 500;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
+.mail-toolbar h1:focus {
+    outline: none;
+}
+
 .mail-count {
     color: var(--mail-clr-text-muted);
-    font-size: .875rem;
+    font-size: .75rem;
     white-space: nowrap;
 }
 
-.mail-menu-btn {
-    display: none;
+.mail-toolbar-controls {
+    display: flex;
+    min-width: 0;
     align-items: center;
-    justify-content: center;
-    width: var(--mail-touch-target);
-    height: var(--mail-touch-target);
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    color: var(--mail-clr-text-secondary);
-    background: transparent;
-    font: inherit;
-    font-size: 1.35rem;
-    cursor: pointer;
-}
-
-.mail-menu-btn:focus-visible {
-    outline: 2px solid var(--mail-clr-accent);
-    outline-offset: 2px;
-}
-
-.mail-menu-btn:hover {
-    background: var(--mail-clr-row-action-hover);
+    justify-content: flex-end;
+    gap: .5rem;
 }
