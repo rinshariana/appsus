@@ -320,7 +320,8 @@
     }
 
     .mail-compose-header button,
-    .mail-send-btn {
+    .mail-send-btn,
+    .mail-save-note-btn {
         min-width: var(--mail-touch-target);
         min-height: var(--mail-touch-target);
     }

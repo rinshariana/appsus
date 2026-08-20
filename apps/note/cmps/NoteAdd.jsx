@@ -1,11 +1,11 @@
 import { noteService } from '../services/note.service.js'
 import { NoteEditor } from './NoteEditor.jsx'
 
-export function NoteAdd({ onAddNote }) {
+export function NoteAdd({ onAddNote, initialNote = noteService.getEmptyNote() }) {
     return (
         <section className="note-add">
             <NoteEditor
-                initialNote={noteService.getEmptyNote()}
+                initialNote={initialNote}
                 onSave={onAddNote}
             />
         </section>

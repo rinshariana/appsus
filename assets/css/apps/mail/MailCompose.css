@@ -50,7 +50,8 @@
 }
 
 .mail-compose-header button:focus-visible,
-.mail-send-btn:focus-visible {
+.mail-send-btn:focus-visible,
+.mail-save-note-btn:focus-visible {
     outline: 2px solid var(--mail-clr-accent);
     outline-offset: -3px;
 }
@@ -171,5 +172,30 @@
 
 .mail-send-btn:disabled {
     opacity: .7;
+    cursor: wait;
+}
+
+.mail-save-note-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--mail-clr-text-secondary);
+    background: transparent;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.mail-save-note-btn:hover:not(:disabled) {
+    color: var(--mail-clr-text-primary);
+    background: var(--mail-clr-folder-hover);
+}
+
+.mail-save-note-btn:disabled {
+    opacity: .55;
     cursor: wait;
 }

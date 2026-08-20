@@ -6,7 +6,7 @@ import { mailService } from '../services/mail.service.js'
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const AUTOSAVE_INTERVAL = 5000
 
-export function MailCompose({ onSend, onSaveDraft, onClose }) {
+export function MailCompose({ onSend, onSaveDraft, onSaveAsNote, onClose }) {
     const [searchParams, setSearchParams] = useSearchParams()
     const [recipientError, setRecipientError] = useState('')
     const [submitError, setSubmitError] = useState('')
@@ -160,6 +160,22 @@ export function MailCompose({ onSend, onSaveDraft, onClose }) {
         }
     }
 
+    async function onSaveAsNoteClick() {
+        if (isSendingRef.current || isFinalizingRef.current) return
+
+        isFinalizingRef.current = true
+        setIsFinalizing(true)
+        try {
+            await persistDirtyDraft({ force: true })
+            const currentMail = getMailFromSearchParams(searchParamsRef.current)
+
+            await onSaveAsNote(currentMail)
+        } catch (err) {
+            isFinalizingRef.current = false
+            if (isMountedRef.current) setIsFinalizing(false)
+        }
+    }
+
     requestCloseRef.current = requestClose
 
     async function persistDirtyDraft({ force = false } = {}) {
@@ -298,6 +314,16 @@ export function MailCompose({ onSend, onSaveDraft, onClose }) {
                         <span>{isSending ? 'Sending…' : 'Send'}</span>
                     </button>
 
+                    <button
+                        className="mail-save-note-btn"
+                        type="button"
+                        aria-label="Save as note"
+                        title="Save as note"
+                        disabled={isBusy}
+                        onClick={onSaveAsNoteClick}
+                    >
+                        <i className="fa-solid fa-file-arrow-up" aria-hidden="true" />
+                    </button>
                 </footer>
             </form>
         </section>

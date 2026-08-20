@@ -6,12 +6,25 @@ import { showErrorMsg, showSuccessMsg } from '../../../services/event-bus.servic
 import { NoteHeader } from '../cmps/NoteHeader.jsx'
 
 const { useState, useEffect } = React
+const { useSearchParams } = ReactRouterDOM
 
 export function NoteIndex() {
+    const [searchParams, setSearchParams] = useSearchParams()
     const [notes, setNotes] = useState(null)
     const [selectedNote, setSelectedNote] = useState(null)
     const [isScrolled, setIsScrolled] = useState(false)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const importedTitle = searchParams.get('title')
+    const importedTxt = searchParams.get('txt')
+    const hasImportedNote = importedTitle !== null || importedTxt !== null
+    const initialNewNote = noteService.getEmptyNote(
+        'NoteTxt',
+        importedTitle || '',
+        importedTxt || ''
+    )
+    const noteAddKey = hasImportedNote
+        ? `imported:${importedTitle || ''}:${importedTxt || ''}`
+        : 'empty'
 
     useEffect(() => {
         loadNotes()
@@ -33,8 +46,18 @@ export function NoteIndex() {
             .then(savedNote => {
                 setNotes(prevNotes => [savedNote, ...prevNotes])
                 showSuccessMsg('Note added')
+                if (hasImportedNote) clearImportedNoteParams()
+                return savedNote
             })
             .catch(err => showErrorMsg('Cannot add note'))
+    }
+
+    function clearImportedNoteParams() {
+        const nextSearchParams = new URLSearchParams(searchParams)
+
+        nextSearchParams.delete('title')
+        nextSearchParams.delete('txt')
+        setSearchParams(nextSearchParams, { replace: true })
     }
 
     function onRemoveNote(noteId) {
@@ -96,7 +119,11 @@ export function NoteIndex() {
                     }
                 >
                     <section className="note-content">
-                        <NoteAdd onAddNote={onAddNote} />
+                        <NoteAdd
+                            key={noteAddKey}
+                            initialNote={initialNewNote}
+                            onAddNote={onAddNote}
+                        />
 
                         {selectedNote && (
                             <NoteEditor
