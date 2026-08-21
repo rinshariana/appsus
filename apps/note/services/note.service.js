@@ -6,14 +6,41 @@ _createNotes()
 
 export const noteService = {
     query,
-    save,
     remove,
+    save,
     getEmptyNote,
+    getDefaultFilter,
+    getFilterFromSearchParams,
 }
 
 
-function query() {
+function query(filterBy = {}) {
     return storageService.query(NOTE_KEY)
+        .then(notes => {
+            if (filterBy.txt) {
+                const regExp = new RegExp(filterBy.txt, 'i')
+
+                notes = notes.filter(note => {
+                    const title = note.info.title || ''
+                    const txt = note.info.txt || ''
+
+                    return (
+                        regExp.test(title) ||
+                        regExp.test(txt)
+                    )
+                })
+            }
+
+            if (filterBy.type) {
+                notes = notes.filter(note => note.type === filterBy.type)
+            }
+
+            if (filterBy.isPinned) {
+                notes = notes.filter(note => note.isPinned)
+            }
+
+            return notes
+        })
 }
 
 function save(note) {
@@ -45,6 +72,29 @@ function getEmptyNote(
             txt
         }
     }
+}
+
+function getDefaultFilter(filterBy = {
+    txt: '',
+    type: '',
+    isPinned: ''
+}) {
+    return {
+        txt: filterBy.txt,
+        type: filterBy.type,
+        isPinned: filterBy.isPinned
+    }
+}
+
+function getFilterFromSearchParams(searchParams) {
+    const defaultFilter = getDefaultFilter()
+    const filterBy = {}
+
+    for (const field in defaultFilter) {
+        filterBy[field] = searchParams.get(field) || ''
+    }
+
+    return filterBy
 }
 
 function _createNotes() {

@@ -1,30 +1,44 @@
+import { utilService } from '../../../services/util.service.js'
 import { noteService } from '../services/note.service.js'
 import { NoteList } from '../cmps/NoteList.jsx'
 import { NoteAdd } from '../cmps/NoteAdd.jsx'
 import { NoteEditor } from '../cmps/NoteEditor.jsx'
 import { showErrorMsg, showSuccessMsg } from '../../../services/event-bus.service.js'
 import { NoteHeader } from '../cmps/NoteHeader.jsx'
+import { useEffectUpdate } from '../../../custom-hooks/useEffectUpdate.js'
 
 const { useState, useEffect } = React
+const { useSearchParams } = ReactRouterDOM
 
 export function NoteIndex() {
     const [notes, setNotes] = useState(null)
     const [selectedNote, setSelectedNote] = useState(null)
     const [isScrolled, setIsScrolled] = useState(false)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const [searchParams, setSearchParams] = useSearchParams()
+    const [filterBy, setFilterBy] = useState(
+        noteService.getFilterFromSearchParams(searchParams)
+    )
 
     useEffect(() => {
         loadNotes()
     }, [])
 
+    useEffectUpdate(() => {
+        loadNotes()
+        setSearchParams(utilService.trimObj(filterBy))
+    }, [filterBy])
+
     function onToggleSidebar() {
         setIsSidebarOpen(prev => !prev)
     }
 
-
+    function onSetFilter(filterBy) {
+        setFilterBy(filterBy)
+    }
 
     function loadNotes() {
-        return noteService.query()
+        return noteService.query(filterBy)
             .then(setNotes)
     }
 
@@ -82,6 +96,8 @@ export function NoteIndex() {
             <NoteHeader
                 isScrolled={isScrolled}
                 onToggleSidebar={onToggleSidebar}
+                filterBy={filterBy}
+                onSetFilter={onSetFilter}
             />
 
             <section className="note-page full">

@@ -1,4 +1,15 @@
-export function NoteHeader({ isScrolled, onToggleSidebar }) {
+import { NoteFilter } from './NoteFilter.jsx'
+
+const { useState } = React
+
+export function NoteHeader({
+    isScrolled,
+    onToggleSidebar,
+    filterBy,
+    onSetFilter
+}) {
+    const [isSearchOpen, setIsSearchOpen] = useState(false)
+
     return (
         <header
             className={`note-header full main-layout ${isScrolled ? 'scrolled' : ''}`}
@@ -34,9 +45,23 @@ export function NoteHeader({ isScrolled, onToggleSidebar }) {
                     <span className="note-brand-title">Keep</span>
                 </a>
 
-                <div className="note-search">
-                    Search
+                <div className={`note-search-wrapper ${isSearchOpen ? 'open' : ''}`}>
+                    <NoteFilter
+                        filterBy={filterBy}
+                        onSetFilter={onSetFilter}
+                    />
                 </div>
+                {!isSearchOpen && <button
+                    className="note-search-toggle"
+                    onClick={() => setIsSearchOpen(prev => !prev)}
+                    aria-label="Search notes"
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M9.5 3a6.5 6.5 0 1 0 3.98 11.64L19.85 21 21 19.85l-6.36-6.37A6.5 6.5 0 0 0 9.5 3zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z" />
+                    </svg>
+                </button>
+                }
+
 
             </section>
         </header>
