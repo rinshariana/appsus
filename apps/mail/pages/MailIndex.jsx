@@ -239,6 +239,14 @@ export function MailIndex() {
         }
     }
 
+    function onSaveAsNote(mail) {
+        const noteSearchParams = new URLSearchParams()
+
+        noteSearchParams.set('title', mail.subject || '')
+        noteSearchParams.set('txt', mail.body || '')
+        navigate(`/note?${noteSearchParams.toString()}`)
+    }
+
     async function onMarkAsRead(mail) {
         if (mail.isRead) return mail
 
@@ -392,6 +400,7 @@ export function MailIndex() {
                 <MailCompose
                     onSend={onSendMail}
                     onSaveDraft={onSaveDraft}
+                    onSaveAsNote={onSaveAsNote}
                     onClose={onCloseCompose}
                 />
             )}
