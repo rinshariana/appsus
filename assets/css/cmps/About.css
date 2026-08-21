@@ -1,0 +1,81 @@
+.about {
+    min-height: calc(100vh - var(--app-header-height));
+    padding: clamp(4.5rem, 10vh, 8rem) max(1.5rem, calc((100vw - 880px) / 2));
+    background: #f8fafd;
+    color: #202124;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+.about-intro {
+    max-width: 720px;
+}
+
+.about-eyebrow {
+    margin-bottom: 1.15rem;
+}
+
+.about h1 {
+    max-width: 680px;
+    font-size: clamp(2.6rem, 6vw, 4.75rem);
+    font-weight: 580;
+    letter-spacing: -0.052em;
+    line-height: 1.02;
+}
+
+.about-intro > p:last-child {
+    max-width: 650px;
+    margin: 1.75rem 0 0;
+    color: #5f6368;
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    line-height: 1.7;
+}
+
+.about-products {
+    margin-top: clamp(3.5rem, 7vw, 5.5rem);
+    border-top: 1px solid #dfe3e7;
+}
+
+.about-product {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 1.25rem;
+    min-height: 118px;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #dfe3e7;
+}
+
+.about-product > span {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.about-product strong {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.about-product > span > span {
+    color: #5f6368;
+    line-height: 1.45;
+}
+
+@media (max-width: 540px) {
+    .about {
+        padding: 4rem 1.25rem;
+    }
+
+    .about h1 {
+        font-size: 2.65rem;
+    }
+
+    .about-product {
+        gap: 1rem;
+        min-height: 108px;
+    }
+
+    .about-product > span > span {
+        font-size: 0.9rem;
+    }
+}

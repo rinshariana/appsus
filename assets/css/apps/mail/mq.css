@@ -1,6 +1,6 @@
 @media (min-width: 720px) and (max-width: 1023px) {
     .mail-header {
-        grid-template-columns: 220px minmax(280px, 1fr) 88px;
+        grid-template-columns: 220px minmax(280px, 1fr) 128px;
         gap: .75rem;
     }
 
@@ -50,13 +50,13 @@
     }
 
     .mail-brand span,
-    .mail-header-apps {
+    .mail-header .apps-navigation {
         display: none;
     }
 
     .mail-brand-mark {
         width: 30px;
-        height: 24px;
+        height: auto;
     }
 
     .mail-header-search {

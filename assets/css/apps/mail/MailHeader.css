@@ -1,6 +1,6 @@
 .mail-header {
     display: grid;
-    grid-template-columns: 256px minmax(320px, 720px) minmax(96px, 1fr);
+    grid-template-columns: 256px minmax(320px, 720px) minmax(136px, 1fr);
     align-items: center;
     gap: 1rem;
     min-width: 0;
@@ -10,8 +10,7 @@
 
 .mail-header-branding,
 .mail-brand,
-.mail-header-search,
-.mail-header-apps {
+.mail-header-search {
     display: flex;
     align-items: center;
 }
@@ -22,8 +21,7 @@
 }
 
 .mail-header-icon-btn,
-.mail-header-search button,
-.mail-header-apps a {
+.mail-header-search button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -40,14 +38,12 @@
 }
 
 .mail-header-icon-btn:hover,
-.mail-header-search button:hover,
-.mail-header-apps a:hover {
+.mail-header-search button:hover {
     background: var(--mail-clr-folder-hover);
 }
 
 .mail-header-icon-btn:focus-visible,
 .mail-header-search button:focus-visible,
-.mail-header-apps a:focus-visible,
 .mail-brand:focus-visible {
     outline: 2px solid var(--mail-clr-accent);
     outline-offset: 2px;
@@ -66,8 +62,9 @@
 
 .mail-brand-mark {
     width: 34px;
-    height: 28px;
+    height: auto;
     flex: 0 0 auto;
+    object-fit: contain;
 }
 
 .mail-header-search {
@@ -107,9 +104,4 @@
 
 .mail-header-search input::-webkit-search-cancel-button {
     display: none;
-}
-
-.mail-header-apps {
-    justify-content: flex-end;
-    gap: .25rem;
 }

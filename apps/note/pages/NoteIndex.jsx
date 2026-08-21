@@ -9,7 +9,6 @@ import { useEffectUpdate } from '../../../custom-hooks/useEffectUpdate.js'
 
 const { useState, useEffect } = React
 const { useSearchParams } = ReactRouterDOM
-const { useSearchParams } = ReactRouterDOM
 
 export function NoteIndex() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -17,7 +16,6 @@ export function NoteIndex() {
     const [selectedNote, setSelectedNote] = useState(null)
     const [isScrolled, setIsScrolled] = useState(false)
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-    const [searchParams, setSearchParams] = useSearchParams()
     const [filterBy, setFilterBy] = useState(
         noteService.getFilterFromSearchParams(searchParams)
     )
